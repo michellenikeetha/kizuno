@@ -1,10 +1,39 @@
+<?php
+session_start(); // Start the session to handle error messages
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up as Customer - Kizuno</title>
+    <title>Sign Up as Cook - Kizuno</title>
     <link rel="stylesheet" href="../css/signup.css">
+    <style>
+        /* Notification Style */
+        .notification {
+            width: 100%;
+            margin: 0 auto 20px;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .error {
+            background-color: #e74c3c; /* Red for errors */
+        }
+
+        .success {
+            background-color: #2ecc71; /* Green for success */
+        }
+
+        .notification a {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,8 +46,17 @@
 
     <main>
         <section class="signup-section">
-            <h1>Sign Up as Customer</h1>
-            <form action="../../BACKEND/process_customer_signup.php" method="POST">
+            <h1>Sign Up as Cook</h1>
+
+             <!-- Display the error notification -->
+             <?php
+            if (isset($_SESSION['error'])) {
+                echo '<div class="notification error">' . $_SESSION['error'] . '</div>';
+                unset($_SESSION['error']); // Clear the error after displaying
+            }
+            ?>
+
+            <form action="../../BACKEND/process_cook_signup.php" method="POST">
                 <div class="input-group">
                     <label for="name">Full Name:</label>
                     <input type="text" id="name" name="full_name" required>
@@ -41,7 +79,7 @@
                 </div>
                 <button type="submit" class="signup-button">Sign Up</button>
             </form>
-            <p>Already have an account? <a href="login.html">Login here</a></p>
+            <p>Already have an account? <a href="login.php">Login here</a></p>
         </section>
     </main>
 
