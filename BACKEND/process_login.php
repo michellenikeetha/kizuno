@@ -23,9 +23,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Redirect based on user type (cook or customer)
                 if ($user['user_type'] == 'cook') {
-                    header('Location: ../FRONTEND/html/cook_dashboard.html');
+                    header('Location: ../FRONTEND/html/cook_dashboard.php');
                 } else {
-                    header('Location: ../FRONTEND/html/customer_dashboard.html');
+                    header('Location: ../FRONTEND/html/customer_dashboard.php');
                 }
                 exit();
             } else {
