@@ -22,24 +22,42 @@ $cook = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Handle profile update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $full_name = $_POST['full_name'];
-    $email = $_POST['email'];
+    $full_name = trim($_POST['full_name']);
     $phone_number = $_POST['phone_number'];
     $bio = $_POST['bio'];
     $specialty = $_POST['specialty'];
 
-    // Update the users table for basic info
-    $update_user_stmt = $pdo->prepare("UPDATE users SET full_name = ?, email = ?, phone_number = ? WHERE user_id = ?");
-    $update_user_stmt->execute([$full_name, $email, $phone_number, $cook_id]);
+    // Validate inputs
+    $errors = [];
 
-    // Update the cooks table for bio and specialty
-    $update_cook_stmt = $pdo->prepare("UPDATE cooks SET bio = ?, specialty = ? WHERE user_id = ?");
-    $update_cook_stmt->execute([$bio, $specialty, $cook_id]);
+    // Full name validation
+    if (empty($full_name)) {
+        $errors[] = "Full name cannot be empty.";
+    }
 
-    // Set a success message and refresh the page
-    $_SESSION['success'] = "Profile updated successfully.";
-    header('Location: cook_profile.php');
-    exit();
+    // Phone number validation (only digits and exactly 10 numbers)
+    if (!preg_match('/^\d{10}$/', $phone_number)) {
+        $errors[] = "Phone number must be exactly 10 digits.";
+    }
+
+    // If no errors, update the profile
+    if (empty($errors)) {
+        // Update the users table for basic info (without updating email)
+        $update_user_stmt = $pdo->prepare("UPDATE users SET full_name = ?, phone_number = ? WHERE user_id = ?");
+        $update_user_stmt->execute([$full_name, $phone_number, $cook_id]);
+
+        // Update the cooks table for bio and specialty
+        $update_cook_stmt = $pdo->prepare("UPDATE cooks SET bio = ?, specialty = ? WHERE user_id = ?");
+        $update_cook_stmt->execute([$bio, $specialty, $cook_id]);
+
+        // Set a success message and refresh the page
+        $_SESSION['success'] = "Profile updated successfully.";
+        header('Location: cook_profile.php');
+        exit();
+    } else {
+        // Store errors in session to display on the page
+        $_SESSION['error'] = implode('<br>', $errors);
+    }
 }
 
 ?>
@@ -84,13 +102,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($cook['email']); ?>" required>
+                    <label for="email">Email (cannot be changed):</label>
+                    <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($cook['email']); ?>" disabled>
                 </div>
 
                 <div class="form-group">
                     <label for="phone_number">Phone Number:</label>
-                    <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($cook['phone_number']); ?>">
+                    <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($cook['phone_number']); ?>" required>
                 </div>
 
                 <div class="form-group">
