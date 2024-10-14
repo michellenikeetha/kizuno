@@ -14,26 +14,19 @@ date_default_timezone_set('Asia/Kolkata');
         // JavaScript to limit date selection and check time
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
-            const currentHour = today.getHours();
             const availableDateInput = document.getElementById('available_date');
             
             // Set tomorrow's date as the only valid date
             let tomorrow = new Date(today);
             tomorrow.setDate(today.getDate() + 1);
             const formattedTomorrow = tomorrow.toISOString().split('T')[0];
+            
+            // Ensure the min and max are set to tomorrow's date
             availableDateInput.setAttribute('min', formattedTomorrow);
             availableDateInput.setAttribute('max', formattedTomorrow);
-            
-            // Disable form submission after 12 PM today
-            const form = document.querySelector('form');
-            if (currentHour >= 12) {
-                form.addEventListener('submit', function(e) {
-                    alert("Menu upload is only allowed before 12 PM!");
-                    e.preventDefault();
-                });
-            }
         });
     </script>
+
 </head>
 <body>
     <header>

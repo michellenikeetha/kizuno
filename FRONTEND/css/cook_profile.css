@@ -1,0 +1,148 @@
+/* Updated CSS for Cook Profile */
+
+:root {
+    --primary-color: #36534d;
+    --secondary-color: #f0f4f3;
+    --accent-color: #45a049;
+    --text-color: #333;
+    --background-color: #f9f9f9;
+    --success-color: #4CAF50;
+    --error-color: #f44336;
+  }
+  
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
+  
+  header {
+    background-color: var(--primary-color);
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .logo {
+    text-align: center;
+  }
+  
+  .logo img {
+    height: 80px;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo img:hover {
+    transform: scale(1.05);
+  }
+  
+  main {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 40px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .profile-section h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  .success-message, .error-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  .success-message {
+    background-color: var(--success-color);
+    color: white;
+  }
+  
+  .error-message {
+    background-color: var(--error-color);
+    color: white;
+  }
+  
+  form {
+    display: grid;
+    gap: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+  }
+  
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    border-color: var(--accent-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: var(--accent-color);
+  }
+  
+  footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 40px;
+  }
+  
+  @media (max-width: 768px) {
+    main {
+      padding: 20px;
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      font-size: 14px;
+    }
+    
+    button {
+      width: 100%;
+    }
+  }

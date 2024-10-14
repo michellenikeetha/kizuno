@@ -4,31 +4,35 @@ require '../../BACKEND/db.php';  // Include database connection
 
 date_default_timezone_set('Asia/Kolkata'); // Set timezone to IST
 
+// Check if the user is logged in
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'cook') {
+    // If not logged in or not a cook, redirect to login page
+    header('Location: login.php');
+    exit();
+}
+
 $cook_id = $_SESSION['user_id'];  // Assuming the cook is logged in
 $current_date = new DateTime();
 $tomorrow = new DateTime('tomorrow');
 $current_time = $current_date->format('H:i');
 $cutoff_time = '12:00';
 
-// Fetch menu for the next day
-$stmt = $pdo->prepare("SELECT * FROM meals WHERE cook_id = ? AND available_date = ?");
-$stmt->execute([$cook_id, $tomorrow->format('Y-m-d')]);
-$menu = $stmt->fetch(PDO::FETCH_ASSOC);
+// Fetch menu for today and tomorrow
+$stmt_today = $pdo->prepare("SELECT * FROM meals WHERE cook_id = ? AND available_date = ?");
+$stmt_today->execute([$cook_id, $current_date->format('Y-m-d')]);
+$menu_today = $stmt_today->fetch(PDO::FETCH_ASSOC);
 
-// // Fetch orders for the next day (linking orders to cook via order_items and meals)
-// $stmt_orders = $pdo->prepare("
-//     SELECT o.*, u.full_name, oi.quantity, oi.price
-//     FROM orders o
-//     JOIN order_items oi ON o.order_id = oi.order_id
-//     JOIN meals m ON oi.meal_id = m.meal_id
-//     JOIN users u ON o.customer_id = u.user_id
-//     WHERE m.cook_id = ? AND o.order_date = ?
-// ");
-// $stmt_orders->execute([$cook_id, $tomorrow->format('Y-m-d')]);
-// $orders = $stmt_orders->fetchAll(PDO::FETCH_ASSOC);
+$stmt_tomorrow = $pdo->prepare("SELECT * FROM meals WHERE cook_id = ? AND available_date = ?");
+$stmt_tomorrow->execute([$cook_id, $tomorrow->format('Y-m-d')]);
+$menu_tomorrow = $stmt_tomorrow->fetch(PDO::FETCH_ASSOC);
+
+// Fetch previous menus
+$stmt_previous = $pdo->prepare("SELECT * FROM meals WHERE cook_id = ? AND available_date < ? ORDER BY available_date DESC");
+$stmt_previous->execute([$cook_id, $current_date->format('Y-m-d')]);
+$previous_menus = $stmt_previous->fetchAll(PDO::FETCH_ASSOC);
 
 // Display appropriate messages
-$show_menu_prompt = empty($menu) && ($current_time < $cutoff_time);
+$show_menu_prompt = empty($menu_tomorrow) && ($current_time < $cutoff_time);
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +69,7 @@ $show_menu_prompt = empty($menu) && ($current_time < $cutoff_time);
                     </a>
                 </div>
                 <div class="option">
-                    <a href="profile.html">
+                    <a href="cook_profile.php">
                         <img src="../RESOURCES/profile_icon.png" alt="Profile">
                         <p>View/Edit Profile</p>
                     </a>
@@ -83,53 +87,67 @@ $show_menu_prompt = empty($menu) && ($current_time < $cutoff_time);
                 </div>
             <?php endif; ?>
 
-            <!-- Display menu for tomorrow -->
-            <div class="menu-section">
-                <h2>Menu for <?php echo $tomorrow->format('Y-m-d'); ?>:</h2>
-                <?php if (!empty($menu)): ?>
-                    <div class="menu-details">
-                        <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($menu['name']); ?></p>
-                        <p><strong>Description:</strong> <?php echo htmlspecialchars($menu['description']); ?></p>
-                        <p><strong>Price:</strong> <?php echo htmlspecialchars($menu['price']); ?></p>
-                    </div>
-                <?php else: ?>
-                    <?php if ($show_menu_prompt): ?>
-                        <p class="warning-message">You haven't uploaded a menu for tomorrow yet. The cutoff time is 12:00 PM today.</p>
-                        <a href="menu_upload.php" class="button">Upload Menu Now</a>
+            <!-- Display menu for today and tomorrow side by side -->
+            <div class="menus-container">
+                <div class="menu-section">
+                    <h2>Menu for Today (<?php echo $current_date->format('Y-m-d'); ?>):</h2>
+                    <?php if (!empty($menu_today)): ?>
+                        <div class="menu-details">
+                            <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($menu_today['name']); ?></p>
+                            <p><strong>Description:</strong> <?php echo htmlspecialchars($menu_today['description']); ?></p>
+                            <p><strong>Price:</strong> <?php echo htmlspecialchars($menu_today['price']); ?></p>
+                            <?php if (!empty($menu_today['image_url'])): ?>
+                                <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($menu_today['image_url']); ?>" alt="Meal Image" class="meal-image">
+                            <?php endif; ?>
+                        </div>
                     <?php else: ?>
-                        <p>No menu uploaded for tomorrow.</p>
+                        <p>No menu uploaded for today.</p>
                     <?php endif; ?>
-                <?php endif; ?>
+                </div>
+
+                <div class="menu-section">
+                    <h2>Menu for Tomorrow (<?php echo $tomorrow->format('Y-m-d'); ?>):</h2>
+                    <?php if (!empty($menu_tomorrow)): ?>
+                        <div class="menu-details">
+                            <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($menu_tomorrow['name']); ?></p>
+                            <p><strong>Description:</strong> <?php echo htmlspecialchars($menu_tomorrow['description']); ?></p>
+                            <p><strong>Price:</strong> <?php echo htmlspecialchars($menu_tomorrow['price']); ?></p>
+                            <?php if (!empty($menu_tomorrow['image_url'])): ?>
+                                <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($menu_tomorrow['image_url']); ?>" alt="Meal Image" class="meal-image">
+                            <?php endif; ?>
+                        </div>
+                    <?php else: ?>
+                        <?php if ($show_menu_prompt): ?>
+                            <p class="warning-message">You haven't uploaded a menu for tomorrow yet. The cutoff time is 12:00 PM today.</p>
+                            <a href="menu_upload.php" class="button">Upload Menu Now</a>
+                        <?php else: ?>
+                            <p>No menu uploaded for tomorrow.</p>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                </div>
             </div>
 
-            <!-- Display orders for tomorrow -->
-            <!-- <div class="orders-section">
-                <h2>Orders for <?php echo $tomorrow->format('Y-m-d'); ?>:</h2>
-                <?php if (!empty($orders)): ?>
-                    <table class="orders-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Customer Name</th>
-                                <th>Quantity</th>
-                                <th>Order Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($orders as $order): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($order['id']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['full_name']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['quantity']); ?></td>
-                                    <td><?php echo htmlspecialchars($order['order_time']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+            <!-- Display previous menus below -->
+            <div class="previous-menus-section">
+                <h2>Previous Menus:</h2>
+                <?php if (!empty($previous_menus)): ?>
+                    <div class="previous-menus-grid">
+                        <?php foreach ($previous_menus as $previous_menu): ?>
+                            <div class="menu-details">
+                                <p><strong>Date:</strong> <?php echo htmlspecialchars($previous_menu['available_date']); ?></p>
+                                <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($previous_menu['name']); ?></p>
+                                <p><strong>Description:</strong> <?php echo htmlspecialchars($previous_menu['description']); ?></p>
+                                <p><strong>Price:</strong> <?php echo htmlspecialchars($previous_menu['price']); ?></p>
+                                <?php if (!empty($previous_menu['image_url'])): ?>
+                                    <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($previous_menu['image_url']); ?>" alt="Meal Image" class="meal-image">
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php else: ?>
-                    <p>No orders for tomorrow yet.</p>
+                    <p>No previous menus available.</p>
                 <?php endif; ?>
-            </div> -->
+            </div>
             
         </section>
     </main>
