@@ -10,8 +10,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $_POST['confirm_password'];
 
     // Validate inputs
+    $errors = [];
+
+    // Full name validation: cannot be empty
+    if (empty($full_name)) {
+        $errors[] = "Full name cannot be empty.";
+    }
+
+    // Email validation: cannot be empty and must be a valid email format
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Please provide a valid email address.";
+    }
+
+    // Phone number validation: must be exactly 10 digits
+    if (!preg_match('/^\d{10}$/', $phone_number)) {
+        $errors[] = "Phone number must be exactly 10 digits.";
+    }
+    
+    // Password validation
     if ($password !== $confirm_password) {
-        $_SESSION['error'] = "Passwords do not match.";
+        $errors[] = "Passwords do not match.";
+    }
+
+    // If there are any validation errors, redirect back to the signup form with an error message
+    if (!empty($errors)) {
+        $_SESSION['error'] = implode('<br>', $errors);
         header('Location: ../FRONTEND/html/customer_signup.php');
         exit();
     }
@@ -44,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Handle any other errors
             $_SESSION['error'] = "An unexpected error occurred. Please try again later.";
         }
-        header('Location: ../FRONTEND/html/cook_signup.php');
+        header('Location: ../FRONTEND/html/customer_signup.php');
         exit();
     }
 }
