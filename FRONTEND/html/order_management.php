@@ -1,10 +1,52 @@
+<?php
+session_start();
+require '../../BACKEND/db.php'; // Include the database connection
+
+// Ensure the user is logged in and is a cook
+if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'cook') {
+    header('Location: login.php');
+    exit();
+}
+
+$cook_id = $_SESSION['user_id'];
+
+// Fetch all orders for meals prepared by the cook
+$stmt = $pdo->prepare("
+    SELECT o.order_id, o.total_amount, o.order_date, o.delivery_address, o.status, u.full_name, u.phone_number
+    FROM orders o
+    INNER JOIN order_items oi ON o.order_id = oi.order_id
+    INNER JOIN meals m ON oi.meal_id = m.meal_id
+    INNER JOIN customers c ON o.customer_id = c.customer_id
+    INNER JOIN users u ON c.user_id = u.user_id
+    WHERE m.cook_id = ?
+    GROUP BY o.order_id
+    ORDER BY o.order_date DESC
+");
+$stmt->execute([$cook_id]);
+$orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Handle order status update
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['status'])) {
+    $order_id = $_POST['order_id'];
+    $status = $_POST['status'];
+
+    // Update the status of the order
+    $update_stmt = $pdo->prepare("UPDATE orders SET status = ? WHERE order_id = ?");
+    $update_stmt->execute([$status, $order_id]);
+
+    $_SESSION['success'] = "Order status updated successfully.";
+    header('Location: order_management.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cook Dashboard - Manage Orders</title>
-    <link rel="stylesheet" href="../css/cook_dashboard.css">
+    <title>Order Management - Kizuno</title>
+    <link rel="stylesheet" href="../css/order_management.css">
 </head>
 <body>
     <header>
@@ -17,93 +59,65 @@
 
     <main>
         <section class="order-management-section">
-            <h1>Your Orders</h1>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer Name</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    require '../../BACKEND/db.php';
-                    $cook_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+            <h1>Order Management</h1>
 
-                    // $stmt = $pdo->prepare("SELECT o.order_id, u.full_name, o.total_amount, o.status 
-                    //                         FROM orders o 
-                    //                         JOIN order_items oi ON o.order_id = oi.order_id 
-                    //                         JOIN meals m ON oi.meal_id = m.meal_id 
-                    //                         JOIN users u ON o.customer_id = u.user_id 
-                    //                         WHERE m.cook_id = ?");
-                    // $stmt->execute([$cook_id]);
+            <!-- Display success or error messages -->
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="success-message">
+                    <?php echo $_SESSION['success']; unset($_SESSION['success']); ?>
+                </div>
+            <?php elseif (isset($_SESSION['error'])): ?>
+                <div class="error-message">
+                    <?php echo $_SESSION['error']; unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
 
-                    // while ($order = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    //     echo "<tr>
-                    //             <td>{$order['order_id']}</td>
-                    //             <td>{$order['full_name']}</td>
-                    //             <td>{$order['total_amount']}</td>
-                    //             <td>{$order['status']}</td>
-                    //             <td>
-                    //                 <form action='../../BACKEND/update_order_status.php' method='POST'>
-                    //                     <input type='hidden' name='order_id' value='{$order['order_id']}'>
-                    //                     <select name='status'>
-                    //                         <option value='pending'>Pending</option>
-                    //                         <option value='delivered'>Delivered</option>
-                    //                         <option value='cancelled'>Cancelled</option>
-                    //                     </select>
-                    //                     <button type='submit'>Update</button>
-                    //                 </form>
-                    //             </td>
-                    //           </tr>";
-                    // }
-
-                    // Fetch orders for the next day (linking orders to cook via order_items and meals)
-                    $stmt_orders = $pdo->prepare("
-                        SELECT o.*, u.full_name, oi.quantity, oi.price
-                        FROM orders o
-                        JOIN order_items oi ON o.order_id = oi.order_id
-                        JOIN meals m ON oi.meal_id = m.meal_id
-                        JOIN users u ON o.customer_id = u.user_id
-                        WHERE m.cook_id = ? AND o.order_date = ?
-                    ");
-                    $stmt_orders->execute([$cook_id, $tomorrow->format('Y-m-d')]);
-                    $orders = $stmt_orders->fetchAll(PDO::FETCH_ASSOC);
-
-                    <!-- Display orders for tomorrow -->
-                    <div class="orders-section">
-                        <h2>Orders for <?php echo $tomorrow->format('Y-m-d'); ?>:</h2>
-                        <?php if (!empty($orders)): ?>
-                            <table class="orders-table">
-                                <thead>
-                                    <tr>
-                                        <th>Order ID</th>
-                                        <th>Customer Name</th>
-                                        <th>Quantity</th>
-                                        <th>Order Time</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($orders as $order): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($order['id']); ?></td>
-                                            <td><?php echo htmlspecialchars($order['full_name']); ?></td>
-                                            <td><?php echo htmlspecialchars($order['quantity']); ?></td>
-                                            <td><?php echo htmlspecialchars($order['order_time']); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        <?php else: ?>
-                            <p>No orders for tomorrow yet.</p>
-                        <?php endif; ?>
-                    </div>
-                    ?>
-                </tbody>
-            </table>
+            <!-- Check if there are no orders -->
+            <?php if (empty($orders)): ?>
+                <div class="no-orders-message">
+                    <img src="../RESOURCES/no-orders.png" alt="No Orders" class="no-orders-icon">
+                    <p>No orders have been placed yet. When customers place orders, they will appear here.</p>
+                </div>
+            <?php else: ?>
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer Name</th>
+                            <th>Phone Number</th>
+                            <th>Total Amount</th>
+                            <th>Order Date</th>
+                            <th>Delivery Address</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($order['order_id']); ?></td>
+                                <td><?php echo htmlspecialchars($order['full_name']); ?></td>
+                                <td><?php echo htmlspecialchars($order['phone_number']); ?></td>
+                                <td><?php echo htmlspecialchars($order['total_amount']); ?></td>
+                                <td><?php echo htmlspecialchars($order['order_date']); ?></td>
+                                <td><?php echo htmlspecialchars($order['delivery_address']); ?></td>
+                                <td><?php echo htmlspecialchars($order['status']); ?></td>
+                                <td>
+                                    <form action="order_management.php" method="POST">
+                                        <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
+                                        <select name="status">
+                                            <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
+                                            <option value="delivered" <?php if ($order['status'] === 'delivered') echo 'selected'; ?>>Delivered</option>
+                                            <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                        </select>
+                                        <button type="submit">Update</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
         </section>
     </main>
 

@@ -138,9 +138,9 @@ $show_menu_prompt = empty($menu_tomorrow) && ($current_time < $cutoff_time);
                                 <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($previous_menu['name']); ?></p>
                                 <p><strong>Description:</strong> <?php echo htmlspecialchars($previous_menu['description']); ?></p>
                                 <p><strong>Price:</strong> <?php echo htmlspecialchars($previous_menu['price']); ?></p>
-                                <?php if (!empty($previous_menu['image_url'])): ?>
+                                <!-- <?php if (!empty($previous_menu['image_url'])): ?>
                                     <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($previous_menu['image_url']); ?>" alt="Meal Image" class="meal-image">
-                                <?php endif; ?>
+                                <?php endif; ?> -->
                             </div>
                         <?php endforeach; ?>
                     </div>
