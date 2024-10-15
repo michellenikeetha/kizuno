@@ -50,6 +50,13 @@ $show_menu_prompt = empty($menu_tomorrow) && ($current_time < $cutoff_time);
                 <img src="../RESOURCES/logo.png" alt="Kizuno Logo">
             </a>
         </div>
+        <nav>
+            <ul>
+                <li><a href="previous_menus.php">Menus</a></li> 
+                <li><a href="../../BACKEND/logout.php">Logout</a></li> 
+            </ul>
+        </nav>
+        
     </header>
 
     <main>
@@ -128,7 +135,7 @@ $show_menu_prompt = empty($menu_tomorrow) && ($current_time < $cutoff_time);
             </div>
 
             <!-- Display previous menus below -->
-            <div class="previous-menus-section">
+            <!-- <div class="previous-menus-section">
                 <h2>Previous Menus:</h2>
                 <?php if (!empty($previous_menus)): ?>
                     <div class="previous-menus-grid">
@@ -138,16 +145,16 @@ $show_menu_prompt = empty($menu_tomorrow) && ($current_time < $cutoff_time);
                                 <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($previous_menu['name']); ?></p>
                                 <p><strong>Description:</strong> <?php echo htmlspecialchars($previous_menu['description']); ?></p>
                                 <p><strong>Price:</strong> <?php echo htmlspecialchars($previous_menu['price']); ?></p>
-                                <!-- <?php if (!empty($previous_menu['image_url'])): ?>
+                                <?php if (!empty($previous_menu['image_url'])): ?>
                                     <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($previous_menu['image_url']); ?>" alt="Meal Image" class="meal-image">
-                                <?php endif; ?> -->
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
                     <p>No previous menus available.</p>
                 <?php endif; ?>
-            </div>
+            </div> -->
             
         </section>
     </main>

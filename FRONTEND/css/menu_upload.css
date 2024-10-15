@@ -9,13 +9,49 @@ body {
 
 header {
     background-color: #36534d;
-    padding: 20px;
-    text-align: center;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
 }
 
-header .logo img {
-    height: 50px;
-}
+header .logo {
+    display: flex;
+    align-items: center;
+  }
+
+  header .logo img {
+    height: 80px;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo img:hover {
+    transform: scale(1.05);
+  }
+  
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  nav ul li {
+      display: inline;
+      margin-right: 20px;
+      margin-left: 20px;
+  }
+  
+  nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 18px;
+  }
+  
+  nav ul li a:hover {
+      text-decoration: underline;
+  }
 
 main {
     padding: 20px;

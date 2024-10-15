@@ -77,6 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="../RESOURCES/logo.png" alt="Kizuno Logo">
             </a>
         </div>
+        <nav>
+            <ul>
+                <li><a href="menu_upload.php">Upload Menu</a></li>
+                <li><a href="order_management.php">Orders</a></li>
+                <li><a href="cook_profile.php">Profile</a></li>
+                <li><a href="previous_menus.php">Menus</a></li>
+                <li><a href="../../BACKEND/logout.php">Logout</a></li>
+            </ul>
+        </nav>
     </header>
 
     <main>

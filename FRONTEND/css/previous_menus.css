@@ -6,45 +6,45 @@
     --background-color: #f9f9f9;
   }
   
-body {
-  font-family: 'Roboto', Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.6;
-}
+  body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+  }
 
-/* Header */
-header {
-  background-color: var(--primary-color);
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 20px;
-}
+  /* Header */
+  header {
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
 
-header .logo {
-  display: flex;
-  align-items: center;
-}
+  header .logo {
+    display: flex;
+    align-items: center;
+  }
 
-header .logo img {
-  height: 80px;
-  transition: transform 0.3s ease;
-}
+  header .logo img {
+    height: 80px;
+    transition: transform 0.3s ease;
+  }
 
-.logo img:hover {
-  transform: scale(1.05);
-}
+  .logo img:hover {
+    transform: scale(1.05);
+  }
 
-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-}
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
 
 nav ul li {
     display: inline;
@@ -64,6 +64,7 @@ nav ul li a:hover {
   
   main {
     padding: 40px 20px;
+    padding-top: 0;
   }
   
   .dashboard-section {
@@ -226,12 +227,14 @@ nav ul li a:hover {
   }
   
   footer {
-    background-color: var(--primary-color);
+    background-color: #36534d;
     color: white;
     text-align: center;
-    padding: 20px 0;
-    margin-top: 60px;
-  }
+    padding: 10px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
   
   @media (max-width: 768px) {
     .dashboard-options, .menus-container {
