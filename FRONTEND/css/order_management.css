@@ -194,3 +194,7 @@ footer {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.status-pending { background-color: #ffeb3b; color: #333; }  /* Yellow */
+.status-accepted { background-color: #03a9f4; color: white; } /* Blue */
+.status-delivered { background-color: #4caf50; color: white; } /* Green */
+.status-cancelled { background-color: #f44336; color: white; } /* Red */

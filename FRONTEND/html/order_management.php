@@ -101,12 +101,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
                                 <td><?php echo htmlspecialchars($order['total_amount']); ?></td>
                                 <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                                 <td><?php echo htmlspecialchars($order['delivery_address']); ?></td>
-                                <td><?php echo htmlspecialchars($order['status']); ?></td>
-                                <td>
+                                <td class="status-<?php echo strtolower($order['status']); ?>"><?php echo htmlspecialchars($order['status']); ?></td>                                <td>
                                     <form action="order_management.php" method="POST">
                                         <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
                                         <select name="status">
                                             <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
+                                            <option value="accepted" <?php if ($order['status'] === 'accepted') echo 'selected'; ?>>Accepted</option>
                                             <option value="delivered" <?php if ($order['status'] === 'delivered') echo 'selected'; ?>>Delivered</option>
                                             <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
                                         </select>
