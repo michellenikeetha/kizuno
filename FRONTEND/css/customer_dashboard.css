@@ -1,10 +1,11 @@
 /* General Styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
     padding: 0;
+    line-height: 1.6;
 }
 
 /* Header */
@@ -14,7 +15,8 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 5%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 header .logo img {
@@ -30,57 +32,102 @@ nav ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    display: flex;
 }
 
 nav ul li {
-    display: inline;
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 nav ul li a {
     color: white;
     text-decoration: none;
     font-size: 18px;
+    transition: opacity 0.3s ease;
 }
 
 nav ul li a:hover {
-    text-decoration: underline;
+    opacity: 0.8;
 }
 
 /* Main Content */
 main {
-    padding: 20px;
-    text-align: center;
+    padding: 40px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    color: #36534d;
+    margin-bottom: 20px;
+}
+
+/* Search Form */
+.search-form {
+    margin-bottom: 30px;
+}
+
+.search-form input[type="text"] {
+    padding: 10px;
+    width: 300px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-form button {
+    padding: 10px 20px;
+    background-color: #36534d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.search-form button:hover {
+    background-color: #2a403c;
 }
 
 /* Meal List */
-.menu {
-    margin-bottom: 40px;
-}
-
 .meal-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
 }
 
 .meal-item {
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin: 10px;
-    width: 250px;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.meal-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.meal-item h3 {
+    color: #36534d;
+    margin-top: 0;
+}
+
+.meal-item p {
+    color: #666;
+    margin-bottom: 15px;
 }
 
 .order-button {
     display: inline-block;
-    padding: 10px;
+    padding: 10px 20px;
     background: #28a745;
     color: white;
     text-decoration: none;
-    border-radius: 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
 .order-button:hover {
@@ -89,25 +136,37 @@ main {
 
 /* Order Tracking */
 .order-tracking {
-    margin-top: 40px;
+    margin-top: 50px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 table {
     width: 100%;
-    border-collapse: collapse;
-}
-
-table, th, td {
-    border: 1px solid #ddd;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 th, td {
-    padding: 10px;
+    padding: 15px;
     text-align: left;
+    border-bottom: 1px solid #ecf0f1;
 }
 
 th {
-    background-color: #f2f2f2;
+    background-color: #36534d;
+    color: white;
+    font-weight: 600;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
 /* Footer */
@@ -115,8 +174,37 @@ footer {
     background-color: #36534d;
     color: white;
     text-align: center;
-    padding: 10px 0;
+    padding: 15px 0;
     position: fixed;
     bottom: 0;
     width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    nav ul {
+        margin-top: 15px;
+    }
+
+    nav ul li {
+        margin: 0 10px;
+    }
+
+    .search-form input[type="text"] {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .search-form button {
+        width: 100%;
+    }
+
+    .meal-list {
+        grid-template-columns: 1fr;
+    }
 }

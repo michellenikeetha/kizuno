@@ -13,17 +13,23 @@ $user_id = $_SESSION['user_id'];
 // Handle search functionality
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Fetch meals from the database with optional search
+// Calculate tomorrow's date
+$tomorrow = new DateTime('tomorrow');
+$tomorrow_date = $tomorrow->format('Y-m-d');
+
+// Fetch meals for tomorrow from the database with optional search
 if ($search) {
     $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, u.full_name 
                             FROM meals m 
                             INNER JOIN users u ON m.cook_id = u.user_id 
-                            WHERE m.name LIKE ? OR m.description LIKE ?");
-    $stmt->execute(["%$search%", "%$search%"]);
+                            WHERE (m.name LIKE ? OR m.description LIKE ?) AND m.available_date = ?");
+    $stmt->execute(["%$search%", "%$search%", $tomorrow_date]);
 } else {
-    $stmt = $pdo->query("SELECT m.meal_id, m.name, m.description, m.price, u.full_name 
-                         FROM meals m 
-                         INNER JOIN users u ON m.cook_id = u.user_id");
+    $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, u.full_name 
+                           FROM meals m 
+                           INNER JOIN users u ON m.cook_id = u.user_id 
+                           WHERE m.available_date = ?");
+    $stmt->execute([$tomorrow_date]);
 }
 $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -61,22 +67,26 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
 
     <main>
         <section class="menu">
-            <h1>Available Meals</h1>
+            <h1>Available Meals for Tomorrow (<?php echo $tomorrow_date; ?>)</h1>
             <form action="customer_dashboard.php" method="GET" class="search-form">
                 <input type="text" name="search" placeholder="Search for meals..." required>
                 <button type="submit">Search</button>
             </form>
 
             <div class="meal-list">
-                <?php foreach ($meals as $meal): ?>
-                    <div class="meal-item">
-                        <h3><?php echo htmlspecialchars($meal['name']); ?></h3>
-                        <p><?php echo htmlspecialchars($meal['description']); ?></p>
-                        <p>Cook: <?php echo htmlspecialchars($meal['full_name']); ?></p>
-                        <p>Price: $<?php echo htmlspecialchars($meal['price']); ?></p>
-                        <a href="order.php?meal_id=<?php echo $meal['meal_id']; ?>" class="order-button">Order Now</a>
-                    </div>
-                <?php endforeach; ?>
+                <?php if (!empty($meals)): ?>
+                    <?php foreach ($meals as $meal): ?>
+                        <div class="meal-item">
+                            <h3><?php echo htmlspecialchars($meal['name']); ?></h3>
+                            <p><?php echo htmlspecialchars($meal['description']); ?></p>
+                            <p>Cook: <?php echo htmlspecialchars($meal['full_name']); ?></p>
+                            <p>Price: Rs.<?php echo htmlspecialchars($meal['price']); ?></p>
+                            <a href="order.php?meal_id=<?php echo $meal['meal_id']; ?>" class="order-button">Order Now</a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p>No meals available for tomorrow yet. Please check back later!</p>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -95,7 +105,7 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                     <?php foreach ($orders as $order): ?>
                         <tr>
                             <td><?php echo htmlspecialchars($order['order_id']); ?></td>
-                            <td>$<?php echo htmlspecialchars($order['total_amount']); ?></td>
+                            <td>Rs.<?php echo htmlspecialchars($order['total_amount']); ?></td>
                             <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                             <td><?php echo htmlspecialchars($order['status']); ?></td>
                         </tr>
