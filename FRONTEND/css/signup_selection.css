@@ -1,7 +1,11 @@
 /* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-image: url('../RESOURCES/signups.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #333;
     margin: 0;
     padding: 0;
@@ -27,7 +31,8 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 215px);
+    height: calc(100vh - 214px);
+    background-color: rgba(244, 244, 244, 0.2);
 }
 
 .signup-selection {
@@ -50,7 +55,7 @@ main {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
-    width: 250px;
+    /* width: 250px; */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
     text-align: center;

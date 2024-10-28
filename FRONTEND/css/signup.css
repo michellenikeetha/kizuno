@@ -1,7 +1,11 @@
 /* General Styles */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-image: url('../RESOURCES/signup.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #333;
     margin: 0;
     padding: 0;
@@ -28,6 +32,7 @@ main {
     justify-content: center;
     align-items: center;
     height: calc(100vh - 150px);
+    background-color: rgba(244, 244, 244, 0.2);
 }
 
 /* Signup Section */
@@ -60,7 +65,7 @@ main {
 
 .input-group input {
     width: 100%;
-    padding: 10px;
+    padding: 10px 0;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;

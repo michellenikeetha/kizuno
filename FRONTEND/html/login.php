@@ -8,7 +8,7 @@
     <style>
         /* Notification Style */
         .notification {
-            width: 100%;
+            /* width: 100%; */
             margin: 0 auto 20px;
             padding: 15px;
             border-radius: 5px;
