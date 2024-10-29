@@ -68,6 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cook Profile - Kizuno</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/cook_profile.css">
 </head>
 <body>
@@ -106,36 +107,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Profile form -->
             <form action="cook_profile.php" method="POST">
                 <div class="form-group">
-                    <label for="full_name">Full Name:</label>
+                    <label for="full_name"><i class="fas fa-user"></i> Full Name:</label>
                     <input type="text" id="full_name" name="full_name" value="<?php echo htmlspecialchars($cook['full_name']); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email (cannot be changed):</label>
+                    <label for="email"><i class="fas fa-envelope"></i> Email (cannot be changed):</label>
                     <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($cook['email']); ?>" disabled>
                 </div>
 
                 <div class="form-group">
-                    <label for="phone_number">Phone Number:</label>
+                    <label for="phone_number"><i class="fas fa-phone"></i> Phone Number:</label>
                     <input type="text" id="phone_number" name="phone_number" value="<?php echo htmlspecialchars($cook['phone_number']); ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="bio">Bio:</label>
+                    <label for="bio"><i class="fas fa-info-circle"></i> Bio:</label>
                     <textarea id="bio" name="bio" rows="5"><?php echo htmlspecialchars($cook['bio']); ?></textarea>
                 </div>
 
                 <div class="form-group">
-                    <label for="specialty">Specialty:</label>
+                    <label for="specialty"><i class="fas fa-utensils"></i> Specialty:</label>
                     <input type="text" id="specialty" name="specialty" value="<?php echo htmlspecialchars($cook['specialty']); ?>">
                 </div>
 
-                <div class="form-group">
-                    <label>Rating:</label>
+                <!-- <div class="form-group">
+                    <label><i class="fas fa-star"></i> Rating:</label>
                     <p><?php echo htmlspecialchars($cook['rating']); ?> / 5.0 (<?php echo htmlspecialchars($cook['total_reviews']); ?> reviews)</p>
-                </div>
+                </div> -->
 
-                <button type="submit">Update Profile</button>
+                <button type="submit"><i class="fas fa-save"></i> Update Profile</button>
             </form>
         </section>
     </main>
