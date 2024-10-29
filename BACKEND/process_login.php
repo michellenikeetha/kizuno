@@ -21,9 +21,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_type'] = $user['user_type'];
                 $_SESSION['email'] = $user['email'];
 
-                // Redirect based on user type (cook or customer)
+                // Redirect based on user type (cook, customer, or driver)
                 if ($user['user_type'] == 'cook') {
                     header('Location: ../FRONTEND/html/cook_dashboard.php');
+                } elseif ($user['user_type'] == 'driver') {
+                    header('Location: ../FRONTEND/html/driver_dashboard.php');
                 } else {
                     header('Location: ../FRONTEND/html/customer_dashboard.php');
                 }
