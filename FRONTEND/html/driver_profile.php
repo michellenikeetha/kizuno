@@ -59,7 +59,9 @@ $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
         </div>
         <nav>
             <ul>
-                <!-- <li><a href="driver_dashboard.php">Dashboard</a></li> -->
+                <li><a href="available_orders.php">Available Orders</a></li>
+                <li><a href="delivered_orders.php">Delivered Orders</a></li>
+                <li><a href="driver_dashboard.php">Dashboard</a></li>
                 <li><a href="../../BACKEND/logout.php">Logout</a></li>
             </ul>
         </nav>
