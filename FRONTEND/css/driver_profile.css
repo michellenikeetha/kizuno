@@ -6,69 +6,66 @@
     --background-color: #f9f9f9;
     --success-color: #4CAF50;
     --error-color: #f44336;
-  }
+}
   
-  body {
-    font-family: 'Roboto', Arial, sans-serif;
-    margin: 0;
-    /* padding: 0; */
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.6;
-  }
-  
-  header {
-    background-color: var(--primary-color);
+body {
+  font-family: 'Roboto', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+/* Header */
+header {
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header .logo {
+  display: flex;
+  align-items: center;
+}
+
+header .logo img {
+  height: 80px;
+  transition: transform 0.3s ease;
+}
+
+.logo img:hover {
+  transform: scale(1.05);
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+nav ul li a {
     color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
+    text-decoration: none;
+    font-size: 18px;
+}
 
-  header .logo {
-    display: flex;
-    align-items: center;
-  }
+nav ul li a:hover {
+    text-decoration: underline;
+}
   
-  .logo {
-    text-align: center;
-  }
-  
-  .logo img {
-    height: 80px;
-    transition: transform 0.3s ease;
-  }
-  
-  .logo img:hover {
-    transform: scale(1.05);
-  }
-
-  nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-  }
-  
-  nav ul li {
-      display: inline;
-      margin-right: 20px;
-      margin-left: 20px;
-  }
-  
-  nav ul li a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-  }
-  
-  nav ul li a:hover {
-      text-decoration: underline;
-  }
-  
-  main {
+main {
     max-width: 800px;
     margin: 40px auto;
     padding: 40px;
@@ -77,32 +74,45 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
-  .profile-section h1 {
+h1 {
     color: var(--primary-color);
     font-size: 2.5em;
     margin-bottom: 30px;
     text-align: center;
-  }
-  
-  .success-message, .error-message {
+}
+
+.success-message, .error-message, .warning-message {
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
-  }
-  
-  .success-message {
-    background-color: var(--success-color);
+}
+
+.success-message {
+    background-color: #4CAF50;
     color: white;
-  }
-  
-  .error-message {
-    background-color: var(--error-color);
+}
+
+.error-message {
+    background-color: #f44336;
     color: white;
-  }
-  
-  form {
+}
+
+.warning-message {
+    background-color: #ff9800;
+    color: white;
+}
+
+footer {
+    background-color: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 60px;
+}
+
+form {
     display: grid;
     gap: 20px;
   }
@@ -158,15 +168,7 @@
   button:hover {
     background-color: var(--accent-color);
   }
-  
-  footer {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 40px;
-  }
-  
+
   @media (max-width: 768px) {
     main {
       padding: 20px;
