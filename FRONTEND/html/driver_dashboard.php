@@ -48,6 +48,11 @@ $stmt = $pdo->prepare("SELECT u.phone_number, d.vehicle_type, d.vehicle_number
 $stmt->execute([$user_id]);
 $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
+// Fetch count of unassigned orders for the notification badge
+$stmt = $pdo->prepare("SELECT COUNT(*) AS unassigned_count FROM orders WHERE driver_id IS NULL AND driver_status = 'unassigned'");
+$stmt->execute();
+$unassigned_count = $stmt->fetchColumn();
+
 // Fetch unassigned orders
 $stmt = $pdo->prepare("SELECT o.order_id, o.delivery_address, o.total_amount, o.order_date 
                        FROM orders o
@@ -111,18 +116,21 @@ if (isset($_GET['deliver_order_id'])) {
             <h1>Welcome, <?php echo $_SESSION['full_name']; ?>!</h1>
 
             <div class="dashboard-options">
-                <!-- <div class="option">
-                    <a href="menu_upload.php">
-                        <img src="../RESOURCES/upload_menu_icon.png" alt="Upload Menu">
-                        <p>Upload Menu</p>
+                <div class="option">
+                    <a href="available_orders.php">
+                        <img src="../RESOURCES/order-delivery.png" alt="Available Orders">
+                        <p>Available Orders</p>
+                        <?php if ($unassigned_count > 0): ?>
+                            <span class="notification-badge"><?= $unassigned_count ?></span>
+                        <?php endif; ?>
                     </a>
                 </div>
                 <div class="option">
-                    <a href="order_management.php">
-                        <img src="../RESOURCES/manage_orders_icon.png" alt="Manage Orders">
-                        <p>Manage Orders</p>
+                    <a href="delivered_orders.php">
+                        <img src="../RESOURCES/manage_orders_icon.png" alt="Delivered Orders">
+                        <p>Delivered Orders</p>
                     </a>
-                </div> -->
+                </div>
                 <div class="option">
                     <a href="driver_profile.php">
                         <img src="../RESOURCES/driver.png" alt="Profile">
