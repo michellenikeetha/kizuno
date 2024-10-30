@@ -7,8 +7,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] != 'driver') {
     exit();
 }
 
-$driver_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 $errors = $success = '';
+
+// Fetch driver_id from delivery_personnel table using user_id from session
+$stmt = $pdo->prepare("SELECT driver_id FROM delivery_personnel WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$driver_data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($driver_data) {
+    $driver_id = $driver_data['driver_id'];
+} else {
+    die("Driver not found in the system.");
+}
 
 // Handle profile updates
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
@@ -18,11 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
 
     // Update phone number in users table
     $stmt = $pdo->prepare("UPDATE users SET phone_number = ? WHERE user_id = ?");
-    $stmt->execute([$phone_number, $driver_id]);
+    $stmt->execute([$phone_number, $user_id]);
 
     // Update vehicle type and number in delivery_personnel table
     $stmt = $pdo->prepare("UPDATE delivery_personnel SET vehicle_type = ?, vehicle_number = ? WHERE user_id = ?");
-    if ($stmt->execute([$vehicle_type, $vehicle_number, $driver_id])) {
+    if ($stmt->execute([$vehicle_type, $vehicle_number, $user_id])) {
         $success = "Profile updated successfully!";
     } else {
         $errors = "Failed to update profile. Try again.";
@@ -34,7 +45,7 @@ $stmt = $pdo->prepare("SELECT u.phone_number, d.vehicle_type, d.vehicle_number
                        FROM users u
                        JOIN delivery_personnel d ON u.user_id = d.user_id 
                        WHERE u.user_id = ?");
-$stmt->execute([$driver_id]);
+$stmt->execute([$user_id]);
 $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Fetch unassigned orders

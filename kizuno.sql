@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 11, 2024 at 08:49 PM
+-- Generation Time: Oct 30, 2024 at 08:00 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,7 +42,7 @@ CREATE TABLE `cooks` (
 
 INSERT INTO `cooks` (`cook_id`, `user_id`, `bio`, `specialty`, `rating`, `total_reviews`) VALUES
 (1, 3, NULL, NULL, 0.00, 0),
-(2, 4, NULL, NULL, 0.00, 0),
+(2, 4, 'hello im pathum', 'Chinese', 0.00, 0),
 (4, 8, NULL, NULL, 0.00, 0);
 
 -- --------------------------------------------------------
@@ -63,7 +63,28 @@ CREATE TABLE `customers` (
 
 INSERT INTO `customers` (`customer_id`, `user_id`, `address`) VALUES
 (1, 1, NULL),
-(2, 7, NULL);
+(2, 7, NULL),
+(3, 22, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `delivery_personnel`
+--
+
+CREATE TABLE `delivery_personnel` (
+  `driver_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `vehicle_type` varchar(50) DEFAULT NULL,
+  `vehicle_number` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `delivery_personnel`
+--
+
+INSERT INTO `delivery_personnel` (`driver_id`, `user_id`, `vehicle_type`, `vehicle_number`) VALUES
+(1, 27, 'Bike', 'PK-4569');
 
 -- --------------------------------------------------------
 
@@ -82,6 +103,17 @@ CREATE TABLE `meals` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `meals`
+--
+
+INSERT INTO `meals` (`meal_id`, `cook_id`, `name`, `description`, `price`, `available_date`, `image_url`, `created_at`) VALUES
+(1, 4, 'fried rice', 'egg fried rice', 250.00, '2024-10-10', NULL, '2024-10-09 05:45:30'),
+(3, 4, 'chicken rice', 'yellow rice with chicken curry', 400.00, '2024-10-11', NULL, '2024-10-11 05:45:30'),
+(9, 4, 'polos baiya', 'asdf', 250.00, '2024-10-15', '1728887263_1_sDOCS6W0SxsNRS5KlQoYgQ.png', '2024-10-14 06:27:43'),
+(10, 4, 'asdf', 'asdf', 999.99, '2024-10-14', NULL, '2024-10-13 05:40:55'),
+(11, 1, 'spagetti', 'chcicken spagetti', 500.00, '2024-10-16', NULL, '2024-10-15 06:21:24');
+
 -- --------------------------------------------------------
 
 --
@@ -94,8 +126,18 @@ CREATE TABLE `orders` (
   `total_amount` decimal(10,2) NOT NULL,
   `order_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `delivery_address` varchar(255) DEFAULT NULL,
-  `status` enum('pending','delivered','cancelled') DEFAULT 'pending'
+  `status` enum('pending','accepted','delivered','cancelled') DEFAULT 'pending',
+  `driver_id` int(11) DEFAULT NULL,
+  `driver_status` enum('unassigned','accepted','delivered') DEFAULT 'unassigned'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`order_id`, `customer_id`, `total_amount`, `order_date`, `delivery_address`, `status`, `driver_id`, `driver_status`) VALUES
+(1, 2, 550.00, '2024-10-14 18:30:00', '123 Main St, Cityville', 'accepted', NULL, 'unassigned'),
+(2, 2, 250.00, '2024-10-13 18:30:00', '456 Oak St, Townsville', 'cancelled', NULL, 'unassigned');
 
 -- --------------------------------------------------------
 
@@ -110,6 +152,14 @@ CREATE TABLE `order_items` (
   `quantity` int(11) DEFAULT 1,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`order_item_id`, `order_id`, `meal_id`, `quantity`, `price`) VALUES
+(1, 1, 9, 1, 0.00),
+(2, 2, 10, 1, 0.00);
 
 -- --------------------------------------------------------
 
@@ -167,7 +217,7 @@ CREATE TABLE `users` (
   `email` varchar(100) NOT NULL,
   `phone_number` varchar(15) DEFAULT NULL,
   `password_hash` varchar(255) NOT NULL,
-  `user_type` enum('cook','customer') NOT NULL,
+  `user_type` enum('cook','customer','driver') NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -178,9 +228,11 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `full_name`, `email`, `phone_number`, `password_hash`, `user_type`, `created_at`) VALUES
 (1, 'Michelle Nikeetha Perera', 'michellenikeetha@gmail.com', '0718760054', '$2y$10$ZYoBtl9/CM/cDFQDI6G5rOSiL9y9O4du4BJoqvCDlKTLZ4KqI/rDa', 'customer', '2024-10-11 17:54:04'),
 (3, 'Roshelle Nishita Perera', 'r@gmail.com', '0714324016', '$2y$10$1mbM3nn7TRc9k6GxXpwkveioavX3xmttAnYJQTbjhwbuvJ3ak5hCa', 'cook', '2024-10-11 17:57:13'),
-(4, 'Pathum Lakshan', 'p@gmail.com', '0771234568', '$2y$10$PMiOYblwyzpFXzH3naW4HOpeeeJvcGF94arKzjHgCsojV/vpE7CBS', 'cook', '2024-10-11 17:58:24'),
+(4, 'Pathum Lakshan', 'p@gmail.com', '0771234112', '$2y$10$PMiOYblwyzpFXzH3naW4HOpeeeJvcGF94arKzjHgCsojV/vpE7CBS', 'cook', '2024-10-11 17:58:24'),
 (7, 'udara nishani', 'n@gmail.com', '0718760054', '$2y$10$qESBAdh9TCZd.z4G3oePHuz5IrNrhpmy1u3TkSP6XBaYWFTrwmUje', 'customer', '2024-10-11 18:35:03'),
-(8, 'udara nishani', 'u@gmail.com', '0718760054', '$2y$10$GwX59TsjTxLgpiZWkphLBuNM0rXgw5rEZoV5JxHpupKxwWKxyaCsO', 'cook', '2024-10-11 18:36:09');
+(8, 'udara nishani', 'u@gmail.com', '0718760054', '$2y$10$GwX59TsjTxLgpiZWkphLBuNM0rXgw5rEZoV5JxHpupKxwWKxyaCsO', 'cook', '2024-10-11 18:36:09'),
+(22, 'nikeetha perera', 'np@gmail.com', '0718760054', '$2y$10$QlUF0Gnohp6FoWRP.ez6TuPhvt5n7VKbxZWzo3uCjtEDkax2kUMqC', 'customer', '2024-10-14 07:17:39'),
+(27, 'Maleesha Perera', 'mp@gmail.com', '0765301377', '$2y$10$tRkvSSgDDPmFp5HvBYxGDePLGVrf4ZJt2p6V4TcXZ2EFTkXLfVFqe', 'driver', '2024-10-29 17:57:59');
 
 --
 -- Indexes for dumped tables
@@ -201,6 +253,13 @@ ALTER TABLE `customers`
   ADD KEY `user_id` (`user_id`);
 
 --
+-- Indexes for table `delivery_personnel`
+--
+ALTER TABLE `delivery_personnel`
+  ADD PRIMARY KEY (`driver_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `meals`
 --
 ALTER TABLE `meals`
@@ -212,7 +271,8 @@ ALTER TABLE `meals`
 --
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`order_id`),
-  ADD KEY `customer_id` (`customer_id`);
+  ADD KEY `customer_id` (`customer_id`),
+  ADD KEY `driver_id` (`driver_id`);
 
 --
 -- Indexes for table `order_items`
@@ -259,31 +319,37 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cooks`
 --
 ALTER TABLE `cooks`
-  MODIFY `cook_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cook_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `delivery_personnel`
+--
+ALTER TABLE `delivery_personnel`
+  MODIFY `driver_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `meals`
 --
 ALTER TABLE `meals`
-  MODIFY `meal_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `meal_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `payments`
@@ -307,7 +373,7 @@ ALTER TABLE `subscriptions`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- Constraints for dumped tables
@@ -326,6 +392,12 @@ ALTER TABLE `customers`
   ADD CONSTRAINT `customers_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `delivery_personnel`
+--
+ALTER TABLE `delivery_personnel`
+  ADD CONSTRAINT `delivery_personnel_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `meals`
 --
 ALTER TABLE `meals`
@@ -335,7 +407,8 @@ ALTER TABLE `meals`
 -- Constraints for table `orders`
 --
 ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`customer_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `orders_ibfk_2` FOREIGN KEY (`driver_id`) REFERENCES `delivery_personnel` (`driver_id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `order_items`
