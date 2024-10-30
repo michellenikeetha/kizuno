@@ -12,10 +12,15 @@ $errors = $success = '';
 
 // Handle profile updates
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
+    $phone_number = $_POST['phone_number'];
     $vehicle_type = $_POST['vehicle_type'];
     $vehicle_number = $_POST['vehicle_number'];
 
-    // Update driver profile in delivery_personnel table
+    // Update phone number in users table
+    $stmt = $pdo->prepare("UPDATE users SET phone_number = ? WHERE user_id = ?");
+    $stmt->execute([$phone_number, $driver_id]);
+
+    // Update vehicle type and number in delivery_personnel table
     $stmt = $pdo->prepare("UPDATE delivery_personnel SET vehicle_type = ?, vehicle_number = ? WHERE user_id = ?");
     if ($stmt->execute([$vehicle_type, $vehicle_number, $driver_id])) {
         $success = "Profile updated successfully!";
@@ -25,7 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update_profile'])) {
 }
 
 // Fetch profile information
-$stmt = $pdo->prepare("SELECT vehicle_type, vehicle_number FROM delivery_personnel WHERE user_id = ?");
+$stmt = $pdo->prepare("SELECT u.phone_number, d.vehicle_type, d.vehicle_number 
+                       FROM users u
+                       JOIN delivery_personnel d ON u.user_id = d.user_id 
+                       WHERE u.user_id = ?");
 $stmt->execute([$driver_id]);
 $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -69,6 +77,7 @@ if (isset($_GET['deliver_order_id'])) {
     <meta charset="UTF-8">
     <title>Driver Dashboard - Kizuno</title>
     <link rel="stylesheet" href="../css/driver_dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
@@ -91,7 +100,7 @@ if (isset($_GET['deliver_order_id'])) {
             <h1>Welcome, <?php echo $_SESSION['full_name']; ?>!</h1>
 
             <div class="dashboard-options">
-                <div class="option">
+                <!-- <div class="option">
                     <a href="menu_upload.php">
                         <img src="../RESOURCES/upload_menu_icon.png" alt="Upload Menu">
                         <p>Upload Menu</p>
@@ -102,7 +111,7 @@ if (isset($_GET['deliver_order_id'])) {
                         <img src="../RESOURCES/manage_orders_icon.png" alt="Manage Orders">
                         <p>Manage Orders</p>
                     </a>
-                </div>
+                </div> -->
                 <div class="option">
                     <a href="driver_profile.php">
                         <img src="../RESOURCES/driver.png" alt="Profile">
@@ -111,57 +120,70 @@ if (isset($_GET['deliver_order_id'])) {
                 </div>
             </div>
 
-            <!-- Profile Update Section -->
-            <section>
-                <h2>Update Profile</h2>
-                <?php if ($errors) echo "<p class='error'>$errors</p>"; ?>
-                <?php if ($success) echo "<p class='success'>$success</p>"; ?>
-                <form method="POST">
-                    <label for="vehicle_type">Vehicle Type:</label>
-                    <input type="text" name="vehicle_type" id="vehicle_type" value="<?= htmlspecialchars($driver_profile['vehicle_type'] ?? '') ?>">
-                    
-                    <label for="vehicle_number">Vehicle Number:</label>
-                    <input type="text" name="vehicle_number" id="vehicle_number" value="<?= htmlspecialchars($driver_profile['vehicle_number'] ?? '') ?>">
-                    
-                    <button type="submit" name="update_profile">Update Profile</button>
+            <!-- Ride Update Section -->
+            <section class="ride-update-section">
+                <h2>Update Ride Details</h2>
+                <?php if ($errors) echo "<p class='error-message'>$errors</p>"; ?>
+                <?php if ($success) echo "<p class='success-message'>$success</p>"; ?>
+                <form method="POST" class="ride-update-form">
+                    <div class="form-group">
+                        <label for="phone_number"><i class="fas fa-phone"></i> Phone Number:</label>
+                        <input type="text" name="phone_number" id="phone_number" value="<?= htmlspecialchars($driver_profile['phone_number'] ?? '') ?>" >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="vehicle_type"><i class="fas fa-car"></i> Vehicle Type:</label>
+                        <input type="text" name="vehicle_type" id="vehicle_type" value="<?= htmlspecialchars($driver_profile['vehicle_type'] ?? '') ?>">
+                    </div>
+                        
+                    <div class="form-group">
+                        <label for="vehicle_number"><i class="fas fa-motorcycle"></i> Vehicle Number:</label>
+                        <input type="text" name="vehicle_number" id="vehicle_number" value="<?= htmlspecialchars($driver_profile['vehicle_number'] ?? '') ?>">
+                    </div>
+
+                    <button type="submit" name="update_profile"><i class="fas fa-save"></i> Update Profile</button>
                 </form>
             </section>
 
-            <!-- Unassigned Orders Section -->
-            <section>
-                <h2>Available Orders</h2>
-                <?php if (empty($unassigned_orders)): ?>
-                    <p>No available orders to accept.</p>
-                <?php else: ?>
-                    <ul>
-                        <?php foreach ($unassigned_orders as $order): ?>
-                            <li>
-                                <strong>Order ID:</strong> <?= $order['order_id'] ?> | 
-                                <strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?> | 
-                                <strong>Amount:</strong> Rs.<?= $order['total_amount'] ?> |
-                                <a href="?accept_order_id=<?= $order['order_id'] ?>">Accept</a>
-                            </li>
-                        <?php endforeach; ?>
-                    </ul>
-                <?php endif; ?>
-            </section>
-
             <!-- Accepted Orders Section -->
-            <section>
+            <section class="orders-section">
                 <h2>Accepted Orders</h2>
                 <?php if (empty($accepted_orders)): ?>
                     <p>No orders accepted yet.</p>
                 <?php else: ?>
-                    <ul>
+                    <div class="order-list">
                         <?php foreach ($accepted_orders as $order): ?>
-                            <li>
-                                <strong>Order ID:</strong> <?= $order['order_id'] ?> |
-                                <strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?> |
-                                <strong>Amount:</strong> Rs.<?= $order['total_amount'] ?> |
-                                <a href="?deliver_order_id=<?= $order['order_id'] ?>">Mark as Delivered</a>
-                            </li>
+                            <div class="order-item">
+                                <div class="order-details">
+                                    <p><strong>Order ID:</strong> <?= $order['order_id'] ?></p>
+                                    <p><strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?></p>
+                                    <p><strong>Amount:</strong> Rs.<?= $order['total_amount'] ?></p>
+                                </div>
+                                <a href="?deliver_order_id=<?= $order['order_id'] ?>" class="deliver-button">Mark as Delivered</a>
+                            </div>
                         <?php endforeach; ?>
-                    </ul>
+                    </div>
+                <?php endif; ?>
+            </section>
+
+            <!-- Unassigned Orders Section -->
+            <section class="orders-section">
+                <h2>Available Orders</h2>
+                <?php if (empty($unassigned_orders)): ?>
+                    <p>No available orders to accept.</p>
+                <?php else: ?>
+                    <div class="order-list">
+                        <?php foreach ($unassigned_orders as $order): ?>
+                            <div class="order-item">
+                                <div class="order-details">
+                                    <p><strong>Order ID:</strong> <?= $order['order_id'] ?></p>
+                                    <p><strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?></p>
+                                    <p><strong>Amount:</strong> Rs.<?= $order['total_amount'] ?></p>
+                                </div>
+                                <a href="?accept_order_id=<?= $order['order_id'] ?>" class="accept-button">Accept</a>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
                 <?php endif; ?>
             </section>
 

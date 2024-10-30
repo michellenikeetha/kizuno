@@ -68,8 +68,8 @@ $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
     <main>
         <section class="profile-edit-section">
             <h1>Edit Profile</h1>
-            <?php if ($errors) echo "<p class='error'>$errors</p>"; ?>
-            <?php if ($success) echo "<p class='success'>$success</p>"; ?>
+            <?php if ($errors) echo "<p class='error-message'>$errors</p>"; ?>
+            <?php if ($success) echo "<p class='success-message'>$success</p>"; ?>
 
             <form method="POST">
                 <label for="full_name"><i class="fas fa-user"></i>Full Name:</label>

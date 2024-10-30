@@ -1,10 +1,12 @@
 :root {
-    --primary-color: #36534d;
-    --secondary-color: #f0f4f3;
-    --accent-color: #ff6b6b;
-    --text-color: #333;
-    --background-color: #f9f9f9;
-  }
+  --primary-color: #36534d;
+  --secondary-color: #f0f4f3;
+  --accent-color: #45a049;
+  --text-color: #333;
+  --background-color: #f9f9f9;
+  --success-color: #4CAF50;
+  --error-color: #f44336;
+}
   
 body {
   font-family: 'Roboto', Arial, sans-serif;
@@ -114,32 +116,207 @@ main {
 }
 
 .success-message, .error-message, .warning-message {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    text-align: center;
-    font-weight: bold;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .success-message {
-    background-color: #4CAF50;
-    color: white;
+  background-color: #4CAF50;
+  color: white;
 }
 
 .error-message {
-    background-color: #f44336;
-    color: white;
+  background-color: #f44336;
+  color: white;
 }
 
 .warning-message {
-    background-color: #ff9800;
-    color: white;
+  background-color: #ff9800;
+  color: white;
 }
 
 footer {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    padding: 20px 0;
-    margin-top: 60px;
+  background-color: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+  margin-top: 60px;
+}
+
+.ride-update-section {
+  max-width: 1200px;
+  margin: 0 auto 50px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ride-update-section h2 {
+  color: var(--primary-color);
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.ride-update-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  flex: 1;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: var(--primary-color);
+}
+
+label i {
+  margin-right: 10px;
+  color: var(--primary-color);
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: var(--primary-color);
+}
+
+.form-group input[type="text"] {
+  width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 16px;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus {
+  border-color: var(--accent-color);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(69, 160, 73, 0.2);
+}
+
+.ride-update-form button {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.ride-update-form button:hover {
+  background-color: var(--accent-color);
+}
+
+.orders-section {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 50px;
+}
+
+.orders-section h2 {
+  color: var(--primary-color);
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+.order-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.order-item {
+  background-color: var(--secondary-color);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-details p {
+  margin: 5px 0;
+}
+
+.accept-button, .deliver-button {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.accept-button:hover, .deliver-button:hover {
+  background-color: #3c8e3e;
+}
+
+@media (max-width: 768px) {
+main {
+    padding: 20px;
+}
+
+.dashboard-options {
+    flex-wrap: wrap;
+}
+
+.option {
+    width: 150px;
+}
+
+.option img {
+    width: 60px;
+    height: 60px;
+}
+
+.option p {
+    font-size: 16px;
+}
+
+.ride-update-section {
+    padding: 20px;
+}
+
+.orders-section {
+    padding: 20px;
+}
+
+.order-list {
+    grid-template-columns: 1fr;
+}
+
+.ride-update-form {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.form-group {
+    margin-right: 0;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+}
+
+.ride-update-form button {
+    width: 100%;
+}
 }
