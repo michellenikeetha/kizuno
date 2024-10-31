@@ -67,14 +67,20 @@ $customer_address = $customer ? $customer['address'] : '';
             <label for="quantity">Quantity:</label>
             <input type="number" name="quantity" id="quantity" min="1" value="1" required>
 
-            <label for="delivery_method">Delivery Method:</label>
+            <!-- <label for="delivery_method">Delivery Method:</label>
             <select name="delivery_method" id="delivery_method" onchange="toggleAddressField()" required>
+                <option value="">Select Delivery Method</option>
                 <option value="pickup">Pick-up</option>
                 <option value="delivery">Delivery</option>
-            </select>
+            </select> -->
 
             <!-- Address Field for Delivery -->
-            <div id="delivery_address_field" style="display: none;">
+            <!-- <div id="delivery_address_field" style="display: none;">
+                <label for="delivery_address">Delivery Address:</label>
+                <input type="text" name="delivery_address" id="delivery_address" value="<?php echo htmlspecialchars($customer_address); ?>" placeholder="Enter your delivery address" required>
+            </div> -->
+
+            <div id="delivery_address_field">
                 <label for="delivery_address">Delivery Address:</label>
                 <input type="text" name="delivery_address" id="delivery_address" value="<?php echo htmlspecialchars($customer_address); ?>" placeholder="Enter your delivery address" required>
             </div>
@@ -100,15 +106,15 @@ $customer_address = $customer ? $customer['address'] : '';
 
         quantityInput.addEventListener('input', updateTotalPrice);
 
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const deliveryMethod = document.getElementById('delivery_method').value;
-            const addressField = document.getElementById('delivery_address');
+        // document.querySelector('form').addEventListener('submit', function(e) {
+        //     const deliveryMethod = document.getElementById('delivery_method').value;
+        //     const addressField = document.getElementById('delivery_address');
             
-            if (deliveryMethod === 'delivery' && addressField.value.trim() === '') {
-                e.preventDefault();
-                alert('Please enter a delivery address.');
-            }
-        });
+        //     if (deliveryMethod === 'delivery' && addressField.value.trim() === '') {
+        //         e.preventDefault();
+        //         alert('Please enter a delivery address.');
+        //     }
+        // });
 
         // Initial price update
         updateTotalPrice();

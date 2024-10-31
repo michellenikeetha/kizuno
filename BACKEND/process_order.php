@@ -1,12 +1,27 @@
 <?php
 session_start();
-require '../../BACKEND/db.php'; // Include the database connection
+require 'db.php'; // Include the database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $meal_id = $_POST['meal_id'];
     $quantity = $_POST['quantity'];
-    $delivery_method = $_POST['delivery_method'];
+    // $delivery_method = $_POST['delivery_method'];
+    $delivery_address = $_POST['delivery_address'];
     $user_id = $_SESSION['user_id'];
+
+    // Fetch the customer's ID from the customers table based on the logged-in user's ID
+    $customer_stmt = $pdo->prepare("SELECT customer_id FROM customers WHERE user_id = ?");
+    $customer_stmt->execute([$user_id]);
+    $customer = $customer_stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Ensure a valid customer is found
+    if (!$customer) {
+        $_SESSION['error'] = "Customer not found.";
+        header('Location: customer_dashboard.php');
+        exit();
+    }
+
+    $customer_id = $customer['customer_id'];
 
     // Fetch meal price
     $stmt = $pdo->prepare("SELECT price FROM meals WHERE meal_id = ?");
@@ -16,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Calculate total amount
     $total_amount = $meal['price'] * $quantity;
 
-    // Insert order into orders table
-    $order_stmt = $pdo->prepare("INSERT INTO orders (customer_id, total_amount, status, delivery_method) VALUES (?, ?, 'pending', ?)");
-    $order_stmt->execute([$user_id, $total_amount, $delivery_method]);
+    // Insert order into orders table with customer_id
+    $order_stmt = $pdo->prepare("INSERT INTO orders (customer_id, total_amount, status, delivery_address) VALUES (?, ?, 'pending', ?)");
+    $order_stmt->execute([$customer_id, $total_amount, $delivery_address]);
 
     // Get the new order ID
     $order_id = $pdo->lastInsertId();
@@ -30,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $_SESSION['success'] = "Order placed successfully!";
-    header('Location: customer_dashboard.php');
+    header('Location: ../FRONTEND/html/customer_dashboard.php');
     exit();
 } else {
     header('Location: customer_dashboard.php');

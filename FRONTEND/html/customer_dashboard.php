@@ -38,7 +38,8 @@ $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Fetch user's orders for tracking
 $order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status 
                              FROM orders o 
-                             WHERE o.customer_id = ?");
+                             INNER JOIN customers c ON o.customer_id = c.customer_id 
+                             WHERE c.user_id = ?");
 $order_stmt->execute([$user_id]);
 $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -54,13 +55,13 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <header>
         <div class="logo">
-            <a href="index.html">
+            <a href="customer_dashboard.php">
                 <img src="../RESOURCES/logo.png" alt="Kizuno Logo">
             </a>
         </div>
         <nav>
             <ul>
-                <li><a href="customer_dashboard.php">Home</a></li>
+                <li><a href="customer_dashboard.php">Dashboard</a></li>
                 <li><a href="order_history.php">My Orders</a></li>
                 <li><a href="../../BACKEND/logout.php">Logout</a></li>
             </ul>
