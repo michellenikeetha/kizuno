@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Kolkata'); 
 require 'db.php'; // Include the database connection
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,23 +18,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Ensure a valid customer is found
     if (!$customer) {
         $_SESSION['error'] = "Customer not found.";
-        header('Location: customer_dashboard.php');
+        header('Location: ../FRONTEND/html/customer_dashboard.php');
         exit();
     }
 
     $customer_id = $customer['customer_id'];
 
-    // Fetch meal price
-    $stmt = $pdo->prepare("SELECT price FROM meals WHERE meal_id = ?");
+    // Fetch meal details, including the price and available date
+    $stmt = $pdo->prepare("SELECT price, available_date FROM meals WHERE meal_id = ?");
     $stmt->execute([$meal_id]);
     $meal = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Calculate total amount for the order
-    $total_amount = $meal['price'] * $quantity;
+    if (!$meal) {
+        $_SESSION['error'] = "Meal not found.";
+        header('Location: ../FRONTEND/html/customer_dashboard.php');
+        exit();
+    }
 
-    // Insert order into orders table with customer_id
-    $order_stmt = $pdo->prepare("INSERT INTO orders (customer_id, total_amount, status, delivery_address) VALUES (?, ?, 'pending', ?)");
-    $order_stmt->execute([$customer_id, $total_amount, $delivery_address]);
+    $total_amount = $meal['price'] * $quantity;
+    $available_date = $meal['available_date'];
+
+    // Time restriction: Allow orders only before 6 PM
+    $current_time = new DateTime();
+    $cutoff_time = new DateTime('18:00');
+
+    if ($current_time >= $cutoff_time) {
+        $_SESSION['error'] = "Orders are only accepted before 6 PM.";
+        header('Location: ../FRONTEND/html/customer_dashboard.php');
+        exit();
+    }
+
+    // Insert order into orders table with customer_id and available date as order_date
+    $order_stmt = $pdo->prepare("INSERT INTO orders (customer_id, total_amount, order_date, delivery_address, status) VALUES (?, ?, ?, ?, 'pending')");
+    $order_stmt->execute([$customer_id, $total_amount, $available_date, $delivery_address]);
 
     // Get the new order ID
     $order_id = $pdo->lastInsertId();
@@ -49,3 +66,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: ../FRONTEND/html/customer_dashboard.php');
     exit();
 }
+
+?>

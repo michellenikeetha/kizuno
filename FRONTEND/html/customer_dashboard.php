@@ -76,6 +76,19 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button type="submit">Search</button>
             </form>
 
+            <?php
+
+                if (isset($_SESSION['error'])) {
+                    echo "<div class='error-message'>" . htmlspecialchars($_SESSION['error']) . "</div>";
+                    unset($_SESSION['error']);
+                }
+
+                if (isset($_SESSION['success'])) {
+                    echo "<div class='success-message'>" . htmlspecialchars($_SESSION['success']) . "</div>";
+                    unset($_SESSION['success']);
+                }
+            ?>
+
             <div class="meal-list">
                 <?php if (!empty($meals)): ?>
                     <?php foreach ($meals as $meal): ?>
