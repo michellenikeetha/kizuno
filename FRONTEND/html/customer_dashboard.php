@@ -21,13 +21,15 @@ $tomorrow_date = $tomorrow->format('Y-m-d');
 if ($search) {
     $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, m.image_url, u.full_name 
                            FROM meals m 
-                           INNER JOIN users u ON m.cook_id = u.user_id 
+                           INNER JOIN cooks c ON m.cook_id = c.cook_id
+                           INNER JOIN users u ON c.user_id = u.user_id 
                            WHERE (m.name LIKE ? OR m.description LIKE ?) AND m.available_date = ?");
     $stmt->execute(["%$search%", "%$search%", $tomorrow_date]);
 } else {
     $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, m.image_url, u.full_name 
                            FROM meals m 
-                           INNER JOIN users u ON m.cook_id = u.user_id 
+                           INNER JOIN cooks c ON m.cook_id = c.cook_id
+                           INNER JOIN users u ON c.user_id = u.user_id 
                            WHERE m.available_date = ?");
     $stmt->execute([$tomorrow_date]);
 }
