@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $pdo->prepare("SELECT price FROM meals WHERE meal_id = ?");
     $stmt->execute([$meal_id]);
     $meal = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-    // Calculate total amount
+
+    // Calculate total amount for the order
     $total_amount = $meal['price'] * $quantity;
 
     // Insert order into orders table with customer_id
@@ -38,16 +38,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get the new order ID
     $order_id = $pdo->lastInsertId();
 
-    // Insert order items into order_items table
-    for ($i = 0; $i < $quantity; $i++) {
-        $order_item_stmt = $pdo->prepare("INSERT INTO order_items (order_id, meal_id) VALUES (?, ?)");
-        $order_item_stmt->execute([$order_id, $meal_id]);
-    }
+    // Insert order item into order_items table with quantity and price per item
+    $order_item_stmt = $pdo->prepare("INSERT INTO order_items (order_id, meal_id, quantity, price) VALUES (?, ?, ?, ?)");
+    $order_item_stmt->execute([$order_id, $meal_id, $quantity, $meal['price']]);
 
     $_SESSION['success'] = "Order placed successfully!";
     header('Location: ../FRONTEND/html/customer_dashboard.php');
     exit();
 } else {
-    header('Location: customer_dashboard.php');
+    header('Location: ../FRONTEND/html/customer_dashboard.php');
     exit();
 }
