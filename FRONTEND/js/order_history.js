@@ -3,7 +3,13 @@ function openModal(order) {
     document.getElementById('modalTotalAmount').textContent = order.total_amount;
     document.getElementById('modalOrderDate').textContent = order.order_date;
     document.getElementById('modalStatus').textContent = order.status;
-    
+    document.getElementById('modalDeliveryAddress').textContent = order.delivery_address || 'N/A';
+    document.getElementById('modalDriverName').textContent = order.driver_name || 'Unassigned';
+    document.getElementById('modalVehicleType').textContent = order.vehicle_type || 'N/A';
+    document.getElementById('modalVehicleNumber').textContent = order.vehicle_number || 'N/A';
+    document.getElementById('modalDriverStatus').textContent = order.driver_status || 'unassigned';
+    document.getElementById('modalItems').textContent = order.items || 'No items available';
+
     // Show the modal
     document.getElementById('orderModal').style.display = 'block';
 }

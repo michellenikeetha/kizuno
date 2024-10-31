@@ -10,11 +10,18 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Fetch user's orders
-$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status 
-                             FROM orders o 
-                             INNER JOIN customers c ON o.customer_id = c.customer_id 
+// Fetch user's orders with extended details
+$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status, o.delivery_address, 
+                                    o.driver_status, d.vehicle_type, d.vehicle_number, u.full_name AS driver_name, 
+                                    GROUP_CONCAT(oi.quantity, ' x ', m.name SEPARATOR ', ') AS items
+                             FROM orders o
+                             INNER JOIN customers c ON o.customer_id = c.customer_id
+                             LEFT JOIN delivery_personnel d ON o.driver_id = d.driver_id
+                             LEFT JOIN users u ON d.user_id = u.user_id
+                             LEFT JOIN order_items oi ON oi.order_id = o.order_id
+                             LEFT JOIN meals m ON oi.meal_id = m.meal_id
                              WHERE c.user_id = ? 
+                             GROUP BY o.order_id
                              ORDER BY o.order_date DESC");
 $order_stmt->execute([$user_id]);
 $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -84,6 +91,12 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
             <p><strong>Total Amount:</strong> Rs.<span id="modalTotalAmount"></span></p>
             <p><strong>Order Date:</strong> <span id="modalOrderDate"></span></p>
             <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+            <p><strong>Delivery Address:</strong> <span id="modalDeliveryAddress"></span></p>
+            <p><strong>Driver Name:</strong> <span id="modalDriverName"></span></p>
+            <p><strong>Driver Vehicle Type:</strong> <span id="modalVehicleType"></span></p>
+            <p><strong>Driver Vehicle Number:</strong> <span id="modalVehicleNumber"></span></p>
+            <p><strong>Driver Status:</strong> <span id="modalDriverStatus"></span></p>
+            <p><strong>Order Items:</strong> <span id="modalItems"></span></p>
         </div>
     </div>
 
