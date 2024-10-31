@@ -35,13 +35,14 @@ if ($search) {
 }
 $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch user's orders for tracking
+// Fetch user's orders for tomorrow's date
 $order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status 
                              FROM orders o 
                              INNER JOIN customers c ON o.customer_id = c.customer_id 
-                             WHERE c.user_id = ?");
-$order_stmt->execute([$user_id]);
+                             WHERE c.user_id = ? AND o.order_date = ?");
+$order_stmt->execute([$user_id, $tomorrow_date]);
 $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!DOCTYPE html>
