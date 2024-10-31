@@ -105,6 +105,13 @@ h1, h2 {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+.meal-item img {
+    width: 100px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
 .meal-item:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);

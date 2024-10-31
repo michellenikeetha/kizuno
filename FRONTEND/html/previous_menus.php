@@ -4,13 +4,24 @@ require '../../BACKEND/db.php';  // Include database connection
 
 date_default_timezone_set('Asia/Kolkata'); // Set timezone to IST
 
-// Check if the user is logged in
+// Check if the user is logged in and is a cook
 if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'cook') {
     header('Location: login.php');
     exit();
 }
 
-$cook_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+
+// Fetch cook ID from the cooks table based on the user_id
+$stmt = $pdo->prepare("SELECT cook_id FROM cooks WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$cook_id = $stmt->fetchColumn();
+
+if (!$cook_id) {
+    $_SESSION['error'] = "Cook ID not found for the logged-in user.";
+    header('Location: login.php');
+    exit();
+}
 
 // Fetch previous menus
 $stmt_previous = $pdo->prepare("SELECT * FROM meals WHERE cook_id = ? AND available_date < ? ORDER BY available_date DESC");
@@ -46,7 +57,7 @@ $previous_menus = $stmt_previous->fetchAll(PDO::FETCH_ASSOC);
 
     <main>
         <section class="previous-menus-section">
-            <h1>Previous Menus:</h1>
+            <h1>Previous Menus</h1>
             <?php if (!empty($previous_menus)): ?>
                 <div class="previous-menus-grid">
                     <?php foreach ($previous_menus as $previous_menu): ?>
@@ -54,7 +65,7 @@ $previous_menus = $stmt_previous->fetchAll(PDO::FETCH_ASSOC);
                             <p><strong>Date:</strong> <?php echo htmlspecialchars($previous_menu['available_date']); ?></p>
                             <p><strong>Meal Name:</strong> <?php echo htmlspecialchars($previous_menu['name']); ?></p>
                             <p><strong>Description:</strong> <?php echo htmlspecialchars($previous_menu['description']); ?></p>
-                            <p><strong>Price:</strong> <?php echo htmlspecialchars($previous_menu['price']); ?></p>
+                            <p><strong>Price:</strong> Rs.<?php echo htmlspecialchars($previous_menu['price']); ?></p>
                             <?php if (!empty($previous_menu['image_url'])): ?>
                                 <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($previous_menu['image_url']); ?>" alt="Meal Image" class="meal-image">
                             <?php endif; ?>

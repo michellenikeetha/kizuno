@@ -4,7 +4,7 @@ date_default_timezone_set('Asia/Kolkata');
 require 'db.php';  // Include database connection
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $cook_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+    $user_id = $_SESSION['user_id'];  // Assuming the cook is logged in
     $meal_name = $_POST['meal_name'];
     $description = $_POST['description'];
     $price = $_POST['price'];
@@ -16,6 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     
     if ($current_time >= $cutoff_time) {
         $_SESSION['error'] = "Menu upload is only allowed before 12 PM!";
+        header('Location: ../FRONTEND/html/menu_upload.php');
+        exit();
+    }
+
+    // Fetch cook ID from the cooks table based on the user_id
+    $stmt = $pdo->prepare("SELECT cook_id FROM cooks WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $cook_id = $stmt->fetchColumn();
+
+    if (!$cook_id) {
+        $_SESSION['error'] = "Cook ID not found for the logged-in user.";
         header('Location: ../FRONTEND/html/menu_upload.php');
         exit();
     }
@@ -42,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $image_name = null;  // If no image uploaded
         }
 
-        // Insert meal details into the database
+        // Insert meal details into the database with cook ID
         $stmt = $pdo->prepare("INSERT INTO meals (cook_id, name, description, price, available_date, image_url) VALUES (?, ?, ?, ?, ?, ?)");
         $stmt->execute([$cook_id, $meal_name, $description, $price, $available_date, $image_name]);
 

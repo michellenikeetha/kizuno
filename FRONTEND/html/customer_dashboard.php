@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../../BACKEND/db.php'; // Include the database connection
+require '../../BACKEND/db.php';
 
 // Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -17,15 +17,15 @@ $search = isset($_GET['search']) ? $_GET['search'] : '';
 $tomorrow = new DateTime('tomorrow');
 $tomorrow_date = $tomorrow->format('Y-m-d');
 
-// Fetch meals for tomorrow from the database with optional search
+// Fetch meals for tomorrow from the database with optional search, including image_url
 if ($search) {
-    $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, u.full_name 
-                            FROM meals m 
-                            INNER JOIN users u ON m.cook_id = u.user_id 
-                            WHERE (m.name LIKE ? OR m.description LIKE ?) AND m.available_date = ?");
+    $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, m.image_url, u.full_name 
+                           FROM meals m 
+                           INNER JOIN users u ON m.cook_id = u.user_id 
+                           WHERE (m.name LIKE ? OR m.description LIKE ?) AND m.available_date = ?");
     $stmt->execute(["%$search%", "%$search%", $tomorrow_date]);
 } else {
-    $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, u.full_name 
+    $stmt = $pdo->prepare("SELECT m.meal_id, m.name, m.description, m.price, m.image_url, u.full_name 
                            FROM meals m 
                            INNER JOIN users u ON m.cook_id = u.user_id 
                            WHERE m.available_date = ?");
@@ -77,6 +77,11 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php if (!empty($meals)): ?>
                     <?php foreach ($meals as $meal): ?>
                         <div class="meal-item">
+                            <?php if ($meal['image_url']): ?>
+                                <img src="../RESOURCES/uploads/<?php echo htmlspecialchars($meal['image_url']); ?>" alt="<?php echo htmlspecialchars($meal['name']); ?>" class="meal-image">
+                            <?php else: ?>
+                                <img src="../RESOURCES/default_meal_image.jpeg" alt="Default Meal Image" class="meal-image">
+                            <?php endif; ?>
                             <h3><?php echo htmlspecialchars($meal['name']); ?></h3>
                             <p><?php echo htmlspecialchars($meal['description']); ?></p>
                             <p>Cook: <?php echo htmlspecialchars($meal['full_name']); ?></p>

@@ -11,7 +11,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'cook') {
     exit();
 }
 
-$cook_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+$user_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+
+// Fetch cook ID from the cooks table based on the user_id
+$stmt = $pdo->prepare("SELECT cook_id FROM cooks WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$cook_id = $stmt->fetchColumn();
+
+if (!$cook_id) {
+    $_SESSION['error'] = "Cook ID not found for the logged-in user.";
+    header('Location: login.php');
+    exit();
+}
+
 $current_date = new DateTime();
 $tomorrow = new DateTime('tomorrow');
 $current_time = $current_date->format('H:i');
