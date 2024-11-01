@@ -49,14 +49,14 @@ $stmt->execute([$user_id]);
 $driver_profile = $stmt->fetch(PDO::FETCH_ASSOC);
 
 // Fetch count of unassigned orders for the notification badge
-$stmt = $pdo->prepare("SELECT COUNT(*) AS unassigned_count FROM orders WHERE driver_id IS NULL AND driver_status = 'unassigned'");
+$stmt = $pdo->prepare("SELECT COUNT(*) AS unassigned_count FROM orders WHERE driver_id IS NULL AND status = 'accepted' AND driver_status = 'unassigned'");
 $stmt->execute();
 $unassigned_count = $stmt->fetchColumn();
 
 // Fetch unassigned orders
 $stmt = $pdo->prepare("SELECT o.order_id, o.delivery_address, o.total_amount, o.order_date 
                        FROM orders o
-                       WHERE o.driver_id IS NULL AND o.driver_status = 'unassigned'");
+                       WHERE o.driver_id IS NULL AND o.status = 'accepted' AND o.driver_status = 'unassigned'");
                     //    WHERE o.driver_id IS NULL AND o.status = 'pending' AND o.driver_status = 'unassigned'");
 $stmt->execute();
 $unassigned_orders = $stmt->fetchAll(PDO::FETCH_ASSOC);

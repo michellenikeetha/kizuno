@@ -36,7 +36,7 @@ if ($search) {
 $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch user's orders for tomorrow's date
-$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status 
+$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status , o.driver_status
                              FROM orders o 
                              INNER JOIN customers c ON o.customer_id = c.customer_id 
                              WHERE c.user_id = ? AND o.order_date = ?");
@@ -121,7 +121,8 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Order ID</th>
                             <th>Total Amount</th>
                             <th>Order Date</th>
-                            <th>Status</th>
+                            <th>Status - Cook</th>
+                            <th>Delivery Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,6 +132,7 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>Rs.<?php echo htmlspecialchars($order['total_amount']); ?></td>
                                 <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                                 <td><?php echo htmlspecialchars($order['status']); ?></td>
+                                <td><?php echo htmlspecialchars($order['driver_status']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

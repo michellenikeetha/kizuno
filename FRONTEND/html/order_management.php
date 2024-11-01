@@ -8,11 +8,22 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_type'] !== 'cook') {
     exit();
 }
 
-$cook_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];  // Assuming the cook is logged in
+
+// Fetch cook ID from the cooks table based on the user_id
+$stmt = $pdo->prepare("SELECT cook_id FROM cooks WHERE user_id = ?");
+$stmt->execute([$user_id]);
+$cook_id = $stmt->fetchColumn();
+
+if (!$cook_id) {
+    $_SESSION['error'] = "Cook ID not found for the logged-in user.";
+    header('Location: login.php');
+    exit();
+}
 
 // Fetch all orders for meals prepared by the cook
 $stmt = $pdo->prepare("
-    SELECT o.order_id, o.total_amount, o.order_date, o.delivery_address, o.status, u.full_name, u.phone_number
+    SELECT o.order_id, o.total_amount, o.order_date, o.delivery_address, o.status, o.driver_status, u.full_name, u.phone_number
     FROM orders o
     INNER JOIN order_items oi ON o.order_id = oi.order_id
     INNER JOIN meals m ON oi.meal_id = m.meal_id
@@ -99,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
                             <th>Delivery Address</th>
                             <th>Status</th>
                             <th>Action</th>
+                            <th>Delivery Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,14 +126,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['order_id'], $_POST['s
                                     <form action="order_management.php" method="POST">
                                         <input type="hidden" name="order_id" value="<?php echo $order['order_id']; ?>">
                                         <select name="status">
-                                            <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option>
-                                            <option value="accepted" <?php if ($order['status'] === 'accepted') echo 'selected'; ?>>Accepted</option>
-                                            <option value="delivered" <?php if ($order['status'] === 'delivered') echo 'selected'; ?>>Delivered</option>
-                                            <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancelled</option>
+                                            <!-- <option value="pending" <?php if ($order['status'] === 'pending') echo 'selected'; ?>>Pending</option> -->
+                                            <option value="accepted" <?php if ($order['status'] === 'accepted') echo 'selected'; ?>>Accept</option>
+                                            <!-- <option value="delivered" <?php if ($order['status'] === 'delivered') echo 'selected'; ?>>Delivered</option> -->
+                                            <option value="cancelled" <?php if ($order['status'] === 'cancelled') echo 'selected'; ?>>Cancel</option>
                                         </select>
                                         <button type="submit">Update</button>
                                     </form>
                                 </td>
+                                <td><?php echo htmlspecialchars($order['driver_status']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
