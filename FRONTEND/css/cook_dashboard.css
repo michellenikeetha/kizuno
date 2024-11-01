@@ -154,7 +154,7 @@ nav ul li a:hover {
   .meal-image {
     width: 100%;
     max-width: 300px;
-    height: auto;
+    height: 300px;
     margin: 20px auto;
     display: block;
     border-radius: 8px;

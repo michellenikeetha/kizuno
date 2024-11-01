@@ -108,8 +108,8 @@ h1, h2 {
 }
 
 .meal-item img {
-    width: 100px;
-    height: auto;
+    width: 200px;
+    height: 200px;
     border-radius: 8px;
     margin-bottom: 15px;
 }

@@ -21,6 +21,10 @@ $customer_stmt = $pdo->prepare("SELECT address FROM customers WHERE user_id = ?"
 $customer_stmt->execute([$user_id]);
 $customer = $customer_stmt->fetch(PDO::FETCH_ASSOC);
 $customer_address = $customer ? $customer['address'] : '';
+
+// Define delivery cost
+$delivery_cost = 200;
+
 ?>
 
 <!DOCTYPE html>
@@ -30,7 +34,7 @@ $customer_address = $customer ? $customer['address'] : '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Meal - Kizuno</title>
     <link rel="stylesheet" href="../css/order_meal.css">
-    <script>
+    <!-- <script>
         function toggleAddressField() {
             const deliveryMethod = document.getElementById('delivery_method').value;
             const addressField = document.getElementById('delivery_address_field');
@@ -40,7 +44,7 @@ $customer_address = $customer ? $customer['address'] : '';
                 addressField.style.display = 'none';
             }
         }
-    </script>
+    </script> -->
 </head>
 <body>
     <header>
@@ -66,6 +70,10 @@ $customer_address = $customer ? $customer['address'] : '';
 
             <label for="quantity">Quantity:</label>
             <input type="number" name="quantity" id="quantity" min="1" value="1" required>
+
+            <p id="meal_cost"></p>
+            <p id="delivery_cost"></p>
+            <p id="total_price"></p>
 
             <!-- <label for="delivery_method">Delivery Method:</label>
             <select name="delivery_method" id="delivery_method" onchange="toggleAddressField()" required>
@@ -97,11 +105,16 @@ $customer_address = $customer ? $customer['address'] : '';
         const quantityInput = document.getElementById('quantity');
         const priceElement = document.querySelector('p');
         const basePrice = parseFloat(<?php echo $meal['price']; ?>);
+        const deliveryCost = <?php echo $delivery_cost; ?>;
 
         function updateTotalPrice() {
             const quantity = parseInt(quantityInput.value);
-            const totalPrice = (basePrice * quantity).toFixed(2);
-            priceElement.textContent = `Total Price: Rs.${totalPrice}`;
+            const mealCost = basePrice * quantity;
+            const totalPrice = mealCost + deliveryCost;
+            
+            document.getElementById('meal_cost').textContent = `Meal Cost: Rs.${mealCost.toFixed(2)}`;
+            document.getElementById('delivery_cost').textContent = `Delivery Cost: Rs.${deliveryCost.toFixed(2)}`;
+            priceElement.textContent = `Total Price: Rs.${totalPrice.toFixed(2)}`;
         }
 
         quantityInput.addEventListener('input', updateTotalPrice);

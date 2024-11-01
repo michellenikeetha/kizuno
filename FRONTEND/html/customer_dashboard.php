@@ -113,28 +113,33 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
         </section>
 
         <section class="order-tracking">
-            <h2>My Orders</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Total Amount</th>
-                        <th>Order Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($orders as $order): ?>
+            <h2>My Recent Orders</h2>
+            <?php if (!empty($orders)): ?>
+                <table>
+                    <thead>
                         <tr>
-                            <td><?php echo htmlspecialchars($order['order_id']); ?></td>
-                            <td>Rs.<?php echo htmlspecialchars($order['total_amount']); ?></td>
-                            <td><?php echo htmlspecialchars($order['order_date']); ?></td>
-                            <td><?php echo htmlspecialchars($order['status']); ?></td>
+                            <th>Order ID</th>
+                            <th>Total Amount</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $order): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($order['order_id']); ?></td>
+                                <td>Rs.<?php echo htmlspecialchars($order['total_amount']); ?></td>
+                                <td><?php echo htmlspecialchars($order['order_date']); ?></td>
+                                <td><?php echo htmlspecialchars($order['status']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p class="no-orders-message">You don't have any recent orders yet. Start exploring our meals and place your order today!</p>
+            <?php endif; ?>
         </section>
+
     </main>
 
     <footer>

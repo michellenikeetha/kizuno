@@ -35,7 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    $total_amount = $meal['price'] * $quantity;
+    // Calculate the total amount including delivery cost
+    $meal_total = $meal['price'] * $quantity;
+    $delivery_cost = 200;
+    $total_amount = $meal_total + $delivery_cost;
     $available_date = $meal['available_date'];
 
     // Time restriction: Allow orders only before 6 PM
