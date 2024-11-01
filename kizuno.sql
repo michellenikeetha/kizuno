@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 30, 2024 at 08:00 PM
+-- Generation Time: Nov 01, 2024 at 06:46 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -84,7 +84,7 @@ CREATE TABLE `delivery_personnel` (
 --
 
 INSERT INTO `delivery_personnel` (`driver_id`, `user_id`, `vehicle_type`, `vehicle_number`) VALUES
-(1, 27, 'Bike', 'PK-4569');
+(1, 27, 'Bike', 'PK-4568');
 
 -- --------------------------------------------------------
 
@@ -112,7 +112,10 @@ INSERT INTO `meals` (`meal_id`, `cook_id`, `name`, `description`, `price`, `avai
 (3, 4, 'chicken rice', 'yellow rice with chicken curry', 400.00, '2024-10-11', NULL, '2024-10-11 05:45:30'),
 (9, 4, 'polos baiya', 'asdf', 250.00, '2024-10-15', '1728887263_1_sDOCS6W0SxsNRS5KlQoYgQ.png', '2024-10-14 06:27:43'),
 (10, 4, 'asdf', 'asdf', 999.99, '2024-10-14', NULL, '2024-10-13 05:40:55'),
-(11, 1, 'spagetti', 'chcicken spagetti', 500.00, '2024-10-16', NULL, '2024-10-15 06:21:24');
+(11, 1, 'spagetti', 'chcicken spagetti', 500.00, '2024-10-16', NULL, '2024-10-15 06:21:24'),
+(12, 4, 'chicken noodles', 'Delicious chicken noodles', 400.00, '2024-11-01', '1730351806_Chicken-noodles.jpg', '2024-10-31 05:16:46'),
+(13, 2, 'Pork noodles', 'Delicious pork noodles', 500.00, '2024-11-01', '1730351806_Chicken-noodles.jpg', '2024-10-31 06:16:46'),
+(14, 2, 'Vegetarian Salad', 'Delicious vegetarian salad with avocado and many other vegies', 400.00, '2024-11-02', '1730437126_salad.jpg', '2024-11-01 04:58:46');
 
 -- --------------------------------------------------------
 
@@ -136,8 +139,15 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`order_id`, `customer_id`, `total_amount`, `order_date`, `delivery_address`, `status`, `driver_id`, `driver_status`) VALUES
-(1, 2, 550.00, '2024-10-14 18:30:00', '123 Main St, Cityville', 'accepted', NULL, 'unassigned'),
-(2, 2, 250.00, '2024-10-13 18:30:00', '456 Oak St, Townsville', 'cancelled', NULL, 'unassigned');
+(1, 2, 550.00, '2024-10-14 18:30:00', '123 Main St, Cityville', 'delivered', 1, 'delivered'),
+(2, 2, 250.00, '2024-10-13 18:30:00', '456 Oak St, Townsville', 'cancelled', NULL, 'unassigned'),
+(3, 2, 400.00, '2024-10-31 06:36:09', '29/ s, mandawila road, piliyandala', 'pending', NULL, 'unassigned'),
+(4, 2, 1000.00, '2024-10-31 07:03:30', '29/ s, mandawila road, piliyandala', 'pending', NULL, 'unassigned'),
+(5, 2, 1200.00, '2024-10-31 18:30:00', '29/ s, mandawila road, piliyandala', 'pending', NULL, 'unassigned'),
+(6, 2, 1500.00, '2024-10-31 18:30:00', '29/ s, mandawila road, piliyandala', 'pending', NULL, 'unassigned'),
+(7, 2, 2000.00, '2024-10-31 18:30:00', '29/ s, mandawila road, piliyandala', 'pending', NULL, 'unassigned'),
+(8, 2, 400.00, '2024-10-31 18:30:00', '29/ s, mandawila road, piliyandala', 'accepted', 1, 'accepted'),
+(9, 2, 1000.00, '2024-11-01 18:30:00', '29/ s, mandawila road, piliyandala', 'delivered', 1, 'delivered');
 
 -- --------------------------------------------------------
 
@@ -159,7 +169,14 @@ CREATE TABLE `order_items` (
 
 INSERT INTO `order_items` (`order_item_id`, `order_id`, `meal_id`, `quantity`, `price`) VALUES
 (1, 1, 9, 1, 0.00),
-(2, 2, 10, 1, 0.00);
+(2, 2, 10, 1, 0.00),
+(3, 3, 12, 1, 0.00),
+(4, 4, 13, 2, 500.00),
+(5, 5, 12, 3, 400.00),
+(6, 6, 13, 3, 500.00),
+(7, 7, 13, 4, 500.00),
+(8, 8, 12, 1, 400.00),
+(9, 9, 14, 2, 400.00);
 
 -- --------------------------------------------------------
 
@@ -232,7 +249,7 @@ INSERT INTO `users` (`user_id`, `full_name`, `email`, `phone_number`, `password_
 (7, 'udara nishani', 'n@gmail.com', '0718760054', '$2y$10$qESBAdh9TCZd.z4G3oePHuz5IrNrhpmy1u3TkSP6XBaYWFTrwmUje', 'customer', '2024-10-11 18:35:03'),
 (8, 'udara nishani', 'u@gmail.com', '0718760054', '$2y$10$GwX59TsjTxLgpiZWkphLBuNM0rXgw5rEZoV5JxHpupKxwWKxyaCsO', 'cook', '2024-10-11 18:36:09'),
 (22, 'nikeetha perera', 'np@gmail.com', '0718760054', '$2y$10$QlUF0Gnohp6FoWRP.ez6TuPhvt5n7VKbxZWzo3uCjtEDkax2kUMqC', 'customer', '2024-10-14 07:17:39'),
-(27, 'Maleesha Perera', 'mp@gmail.com', '0765301377', '$2y$10$tRkvSSgDDPmFp5HvBYxGDePLGVrf4ZJt2p6V4TcXZ2EFTkXLfVFqe', 'driver', '2024-10-29 17:57:59');
+(27, 'Maleesha Perera', 'mp@gmail.com', '0765301376', '$2y$10$tRkvSSgDDPmFp5HvBYxGDePLGVrf4ZJt2p6V4TcXZ2EFTkXLfVFqe', 'driver', '2024-10-29 17:57:59');
 
 --
 -- Indexes for dumped tables
@@ -337,19 +354,19 @@ ALTER TABLE `delivery_personnel`
 -- AUTO_INCREMENT for table `meals`
 --
 ALTER TABLE `meals`
-  MODIFY `meal_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `meal_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `order_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `payments`

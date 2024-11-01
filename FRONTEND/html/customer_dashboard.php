@@ -36,12 +36,24 @@ if ($search) {
 $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch user's orders for tomorrow's date
-$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status , o.driver_status
+// $order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status , o.driver_status
+//                              FROM orders o 
+//                              INNER JOIN customers c ON o.customer_id = c.customer_id 
+//                              WHERE c.user_id = ? AND o.order_date = ?");
+// $order_stmt->execute([$user_id, $tomorrow_date]);
+// $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch user's orders for tomorrow's date, including driver details if assigned
+$order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status, o.driver_status,
+                             d.vehicle_type, d.vehicle_number, u.full_name AS driver_name, u.phone_number AS driver_phone
                              FROM orders o 
                              INNER JOIN customers c ON o.customer_id = c.customer_id 
+                             LEFT JOIN delivery_personnel d ON o.driver_id = d.driver_id
+                             LEFT JOIN users u ON d.user_id = u.user_id
                              WHERE c.user_id = ? AND o.order_date = ?");
 $order_stmt->execute([$user_id, $tomorrow_date]);
 $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
 ?>
 
@@ -132,7 +144,19 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td>Rs.<?php echo htmlspecialchars($order['total_amount']); ?></td>
                                 <td><?php echo htmlspecialchars($order['order_date']); ?></td>
                                 <td><?php echo htmlspecialchars($order['status']); ?></td>
-                                <td><?php echo htmlspecialchars($order['driver_status']); ?></td>
+                                <td>
+                                    <?php 
+                                    if ($order['driver_status'] === 'accepted') {
+                                        echo "<button class='view-driver-btn' onclick=\"openDriverModal('" . 
+                                        htmlspecialchars($order['driver_name']) . "', '" . 
+                                        htmlspecialchars($order['driver_phone']) . "', '" . 
+                                        htmlspecialchars($order['vehicle_type']) . "', '" . 
+                                        htmlspecialchars($order['vehicle_number']) . "')\">View Driver</button>";
+                                    } else {
+                                        echo htmlspecialchars($order['driver_status']);
+                                    }
+                                    ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -142,10 +166,44 @@ $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
             <?php endif; ?>
         </section>
 
+        <!-- Driver Details Modal -->
+        <div id="driverModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <h2>Driver Details</h2>
+                <p><strong>Name:</strong> <span id="driverName"></span></p>
+                <p><strong>Phone Number:</strong> <span id="driverPhone"></span></p>
+                <p><strong>Vehicle Type:</strong> <span id="vehicleType"></span></p>
+                <p><strong>Vehicle Number:</strong> <span id="vehicleNumber"></span></p>
+            </div>
+        </div>
+
     </main>
 
     <footer>
         <p>&copy; 2024 Kizuno. All rights reserved.</p>
     </footer>
+
+    <script>
+        function openDriverModal(driverName, driverPhone, vehicleType, vehicleNumber) {
+            document.getElementById("driverName").textContent = driverName;
+            document.getElementById("driverPhone").textContent = driverPhone;
+            document.getElementById("vehicleType").textContent = vehicleType;
+            document.getElementById("vehicleNumber").textContent = vehicleNumber;
+            document.getElementById("driverModal").style.display = "block";
+        }
+
+        function closeModal() {
+            document.getElementById("driverModal").style.display = "none";
+        }
+
+        // Close the modal if user clicks outside it
+        window.onclick = function(event) {
+            const modal = document.getElementById("driverModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
 </body>
 </html>
