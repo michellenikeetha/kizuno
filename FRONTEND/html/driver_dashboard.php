@@ -177,6 +177,7 @@ if (isset($_GET['deliver_order_id'])) {
                                     <p><strong>Order ID:</strong> <?= $order['order_id'] ?></p>
                                     <p><strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?></p>
                                     <p><strong>Amount:</strong> Rs.<?= $order['total_amount'] ?></p>
+                                    <p><strong>Order Date:</strong> <?= $order['order_date'] ?></p>
                                 </div>
                                 <a href="?deliver_order_id=<?= $order['order_id'] ?>" class="deliver-button">Mark as Delivered</a>
                             </div>
@@ -198,6 +199,7 @@ if (isset($_GET['deliver_order_id'])) {
                                     <p><strong>Order ID:</strong> <?= $order['order_id'] ?></p>
                                     <p><strong>Delivery Address:</strong> <?= htmlspecialchars($order['delivery_address']) ?></p>
                                     <p><strong>Amount:</strong> Rs.<?= $order['total_amount'] ?></p>
+                                    <p><strong>Order Date:</strong> <?= $order['order_date'] ?></p>
                                 </div>
                                 <a href="?accept_order_id=<?= $order['order_id'] ?>" class="accept-button">Accept</a>
                             </div>
