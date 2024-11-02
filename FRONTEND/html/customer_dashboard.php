@@ -13,7 +13,9 @@ $user_id = $_SESSION['user_id'];
 // Handle search functionality
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Calculate tomorrow's date
+// Calculate today's and tomorrow's dates
+$today = new DateTime('today');
+$today_date = $today->format('Y-m-d');
 $tomorrow = new DateTime('tomorrow');
 $tomorrow_date = $tomorrow->format('Y-m-d');
 
@@ -43,17 +45,16 @@ $meals = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // $order_stmt->execute([$user_id, $tomorrow_date]);
 // $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Fetch user's orders for tomorrow's date, including driver details if assigned
+// Fetch user's orders for today's and tomorrow's dates, including driver details if assigned
 $order_stmt = $pdo->prepare("SELECT o.order_id, o.total_amount, o.order_date, o.status, o.driver_status,
                              d.vehicle_type, d.vehicle_number, u.full_name AS driver_name, u.phone_number AS driver_phone
                              FROM orders o 
                              INNER JOIN customers c ON o.customer_id = c.customer_id 
                              LEFT JOIN delivery_personnel d ON o.driver_id = d.driver_id
                              LEFT JOIN users u ON d.user_id = u.user_id
-                             WHERE c.user_id = ? AND o.order_date = ?");
-$order_stmt->execute([$user_id, $tomorrow_date]);
+                             WHERE c.user_id = ? AND (o.order_date = ? OR o.order_date = ?)");
+$order_stmt->execute([$user_id, $today_date, $tomorrow_date]);
 $orders = $order_stmt->fetchAll(PDO::FETCH_ASSOC);
-
 
 ?>
 
